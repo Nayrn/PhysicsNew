@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>c:\users\emily.ryan\desktop\physicsforgamesvs2015_start\physicsforgames\</FILEPATH>
+      <FILENAME>application.cpp</FILENAME>
+      <LINE>133</LINE>
+      <COLUMN>13</COLUMN>
+    </SFA>
+    <DEFECTCODE>6340</DEFECTCODE>
+    <DESCRIPTION>Mismatch on sign: 'unsigned int' passed as _Param_(8) when some signed type is required in call to '_snprintf'.</DESCRIPTION>
+    <FUNCTION>FormatDebugOutputARB</FUNCTION>
+    <DECORATED>?FormatDebugOutputARB@@YAXQADIIIIIPBD@Z</DECORATED>
+    <FUNCLINE>89</FUNCLINE>
+    <PATH />
+  </DEFECT>
+</DEFECTS>
