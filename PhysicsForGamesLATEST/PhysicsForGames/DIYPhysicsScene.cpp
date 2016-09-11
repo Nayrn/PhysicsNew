@@ -16,7 +16,7 @@ DIYPhysicsScene::DIYPhysicsScene()
 	springBall1 = new Sphere(glm::vec3(30, 40, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 	spring = new SpringJoint(springBall, springBall1, 0.8f, 10.0f);
 
-	newPlane = new Plane(glm::vec2(10.0f, 0.0f), 1.0f);
+	newPlane = new Plane(glm::vec2(20.0f, 20.0f), 1.0f);
 
 }
 
@@ -107,18 +107,12 @@ void DIYPhysicsScene::sphere2plane(PhysicsObject* ob1, PhysicsObject* ob2)
 {
 	Sphere *sp = dynamic_cast<Sphere*>(ob1);
 	Plane *plane = dynamic_cast<Plane*>(ob2);
-	// need to take in width
+	// need to take in width / normal
 	if (sp != NULL && plane != NULL)
 	{
-		float sp2Plane = glm::distance(sp->m_position, plane->m_position);
-		float col = sp2Plane - sp->_radius;
-		std::cout << col << std::endl;
-		if (col <= 0)
-		{
-			sp->colour = glm::vec4(0, 0, 0, 1);
-			sp->velocity = glm::vec3(0, 0, 0); 
-			
-		}
+		glm::vec2 colNormal = plane->m_vNormal;
+		float sphere2plane = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
+		// the thing is in the tutorial, you need to change plane's stuff to vec3
 	}
 }
 
