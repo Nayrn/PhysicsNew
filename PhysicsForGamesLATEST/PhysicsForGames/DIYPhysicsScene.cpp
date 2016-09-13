@@ -7,8 +7,8 @@ DIYPhysicsScene::DIYPhysicsScene()
 	m_height = 720;
 	m_AR = m_width / m_height;
 	m_numObjects = actors.size();
-	m_pObj = new Sphere(glm::vec3(-10, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 1, 0, 1));  
-	newBall = new Sphere(glm::vec3(60, 10, 10), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
+	m_pObj = new Sphere(glm::vec3(20, 30, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 1, 0, 1));  
+	newBall = new Sphere(glm::vec3(40, 10, 10), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
 
 	
 
@@ -16,8 +16,7 @@ DIYPhysicsScene::DIYPhysicsScene()
 	springBall1 = new Sphere(glm::vec3(30, 40, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 	spring = new SpringJoint(springBall, springBall1, 0.8f, 10.0f);
 
-	newPlane = new Plane(glm::vec2(20.0f, 20.0f), 1.0f);
-
+	newPlane = new Plane(glm::vec3(10.0f, 0.0f, 10.0f), 1.0f);
 }
 
 void DIYPhysicsScene::AddActor(PhysicsObject * obj)
@@ -110,9 +109,22 @@ void DIYPhysicsScene::sphere2plane(PhysicsObject* ob1, PhysicsObject* ob2)
 	// need to take in width / normal
 	if (sp != NULL && plane != NULL)
 	{
-		glm::vec2 colNormal = plane->m_vNormal;
+		glm::vec3 colNormal = plane->m_vNormal;
 		float sphere2plane = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
+		std::cout << sphere2plane << std::endl;
 		// the thing is in the tutorial, you need to change plane's stuff to vec3
+		if (sphere2plane < 0)
+		{
+			colNormal *= -1;
+			sphere2plane *= -1;
+		}
+
+		float intersectCol = sp->_radius - sphere2plane;
+		if (intersectCol > 0)
+		{
+			sp->velocity = glm::vec3(0, 0, 0);
+			sp->colour = glm::vec4(1, 0, 0, 1);
+		}
 	}
 }
 
