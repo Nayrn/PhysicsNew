@@ -16,7 +16,7 @@ DIYPhysicsScene::DIYPhysicsScene()
 	springBall1 = new Sphere(glm::vec3(30, 40, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 	spring = new SpringJoint(springBall, springBall1, 0.8f, 10.0f);
 
-	newPlane = new Plane(glm::vec3(10.0f, 0.0f, 10.0f), 1.0f);
+	newPlane = new Plane(glm::vec3(-0.1f, -0.1f, -0.1f), 1.0f);
 }
 
 void DIYPhysicsScene::AddActor(PhysicsObject * obj)
@@ -57,10 +57,11 @@ void DIYPhysicsScene::update(float deltaTime)
 	}
 	sphere2sphere(newBall, m_pObj);
 	sphere2plane(m_pObj, newPlane);
-	
+	sphere2plane(newBall, newPlane);
 	float sp2sp = glm::distance(m_pObj->m_position, newBall->m_position);
 	//std::cout << m_pObj->velocity.x << std::endl;
-	
+	float sphere2planeCol = glm::dot(m_pObj->m_position, newPlane->m_vNormal) - newPlane->m_fDistance;
+	std::cout << sphere2planeCol << std::endl;
 }
 
 typedef void(*fn)(PhysicsObject*, PhysicsObject*);
@@ -110,16 +111,15 @@ void DIYPhysicsScene::sphere2plane(PhysicsObject* ob1, PhysicsObject* ob2)
 	if (sp != NULL && plane != NULL)
 	{
 		glm::vec3 colNormal = plane->m_vNormal;
-		float sphere2plane = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
-		std::cout << sphere2plane << std::endl;
+		float sphere2planeCol = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
 		// the thing is in the tutorial, you need to change plane's stuff to vec3
-		if (sphere2plane < 0)
+		if (sphere2planeCol < 0)
 		{
 			colNormal *= -1;
-			sphere2plane *= -1;
+			sphere2planeCol *= -1;
 		}
 
-		float intersectCol = sp->_radius - sphere2plane;
+		float intersectCol = sp->_radius - sphere2planeCol;
 		if (intersectCol > 0)
 		{
 			sp->velocity = glm::vec3(0, 0, 0);
