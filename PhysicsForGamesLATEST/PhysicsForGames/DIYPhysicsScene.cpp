@@ -16,7 +16,7 @@ DIYPhysicsScene::DIYPhysicsScene()
 	springBall1 = new Sphere(glm::vec3(30, 40, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 	spring = new SpringJoint(springBall, springBall1, 0.8f, 10.0f);
 
-	newPlane = new Plane(glm::vec3(-0.1f, -0.1f, -0.1f), 1.0f);
+	newPlane = new Plane(glm::vec3(0, 1, 0.), 1.0f);
 }
 
 void DIYPhysicsScene::AddActor(PhysicsObject * obj)
