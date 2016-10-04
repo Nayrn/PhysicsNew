@@ -12,11 +12,30 @@ DIYPhysicsScene::DIYPhysicsScene()
 
 	
 
-	springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
-	springBall1 = new Sphere(glm::vec3(30, 40, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
-	spring = new SpringJoint(springBall, springBall1, 0.8f, 10.0f);
+	springBall = new Sphere;
+	springBall1 = new Sphere;
+	
+	
 
 	newPlane = new Plane(glm::vec3(0, 1, 0.), 1.0f);
+
+	springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
+	springBall->drag = 0;
+	springBall->elasticity = 0.9f;
+	springBall->dynamicObj = false;
+
+	int numberBalls = 5;
+	for (int i = 1; i < numberBalls; i++)
+	{
+		springBall1 = new Sphere(glm::vec3(30 - (i * 3), 25 - (i * 3), 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
+		springBall1->drag = 0.1f;
+		springBall1->elasticity = 0.9f;
+		springBall1->userInt = 3;
+		AddActor(springBall1);
+		spring = new SpringJoint(springBall, springBall1, 0.1f, .999f);
+		AddActor(spring);
+		//springBall = springBall1;
+	}
 }
 
 void DIYPhysicsScene::AddActor(PhysicsObject * obj)
@@ -32,44 +51,47 @@ void DIYPhysicsScene::removeActor(PhysicsObject * obj)
 
 void DIYPhysicsScene::update(float deltaTime)
 {
+	
+	
+	
 	//Iterate through each shape in the physics scene
 	// makeGizmo()
 	for (auto it = actors.begin(); it != actors.end(); it++)
 	{
 		(*it)->makeGizmo();
 		(*it)->update(gravity, deltaTime);
-		
-
 	}
 
-	Gizmos::draw(glm::ortho<float>(-100, 100, -100 / m_AR, 100 / m_AR, -1.0f, 1.0f));
-	spring->draw(springBall->m_position, springBall1->m_position);
-	
-	if (glfwGetKey(m_window, 77))
-	{
-		newBall->applyForce(glm::vec3(10, 0, 0));
-	}
-	if (glfwGetKey(m_window, 78) == GLFW_PRESS)
-	{
-		newBall->applyForce(gravity);
-		m_pObj->applyForce(gravity);
+	checkForCol();
 
-	}
-	sphere2sphere(newBall, m_pObj);
-	sphere2plane(m_pObj, newPlane);
-	sphere2plane(newBall, newPlane);
-	float sp2sp = glm::distance(m_pObj->m_position, newBall->m_position);
-	//std::cout << m_pObj->velocity.x << std::endl;
-	float sphere2planeCol = glm::dot(m_pObj->m_position, newPlane->m_vNormal) - newPlane->m_fDistance;
-	std::cout << sphere2planeCol << std::endl;
+	//Gizmos::draw(glm::ortho<float>(-100, 100, -100 / m_AR, 100 / m_AR, -1.0f, 1.0f));
+	//spring->draw(springBall->m_position, springBall1->m_position);
+	//
+	//if (glfwGetKey(m_window, 77))
+	//{
+	//	newBall->applyForce(glm::vec3(10, 0, 0));
+	//}
+	//if (glfwGetKey(m_window, 78) == GLFW_PRESS)
+	//{
+	//	newBall->applyForce(gravity);
+	//	m_pObj->applyForce(gravity);
+	//
+	//}
+	//
+	//float sp2sp = glm::distance(m_pObj->m_position, newBall->m_position);
+	////std::cout << m_pObj->velocity.x << std::endl;
+	//float sphere2planeCol = glm::dot(m_pObj->m_position, newPlane->m_vNormal) - newPlane->m_fDistance;
+	//std::cout << sphere2planeCol << std::endl;
 }
 
-typedef void(*fn)(PhysicsObject*, PhysicsObject*);
-//function pointer array for doing our collisions
+typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
+//function pointer array for doing collisions
 static fn collisionfunctionArray[] =
 {
-	DIYPhysicsScene::plane2plane,	DIYPhysicsScene::plane2sphere,
-	DIYPhysicsScene::sphere2plane,
+	DIYPhysicsScene::plane2Plane,	DIYPhysicsScene::plane2Sphere, DIYPhysicsScene::plane2Box,
+	DIYPhysicsScene::sphere2Plane,  DIYPhysicsScene::sphere2Sphere, DIYPhysicsScene::sphere2Box,
+	DIYPhysicsScene::box2Plane,  DIYPhysicsScene::box2Sphere, DIYPhysicsScene::box2Box,
+
 };
 
 void DIYPhysicsScene::checkForCol()
@@ -84,8 +106,9 @@ void DIYPhysicsScene::checkForCol()
 			PhysicsObject* obj2 = actors[inner];
 			int _shapeID1 = obj1->m_shapeID;
 			int _shapeID2 = obj2->m_shapeID;
+			if (_shapeID1 >= NUMBERSHAPE || _shapeID2 >= NUMBERSHAPE) continue;
 
-			int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2; //NUMBERSHAPE?? the fuck??
+			int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2; 
 			fn colFunPtr = collisionfunctionArray[functionIndex];
 			
 			if (colFunPtr != NULL)
@@ -94,16 +117,22 @@ void DIYPhysicsScene::checkForCol()
 	}
 }
 
-void DIYPhysicsScene::plane2plane(PhysicsObject* ob1, PhysicsObject* ob2)
+bool DIYPhysicsScene::plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 {
-
+	return false;
 }
 
-void DIYPhysicsScene::plane2sphere(PhysicsObject* ob1, PhysicsObject* ob2)
+bool DIYPhysicsScene::plane2Sphere(PhysicsObject* ob1, PhysicsObject* ob2)
 {
+	return sphere2Plane(ob2, ob1);
 }
 
-void DIYPhysicsScene::sphere2plane(PhysicsObject* ob1, PhysicsObject* ob2)
+bool DIYPhysicsScene::plane2Box(PhysicsObject * obj1, PhysicsObject * obj2)
+{
+	return false;
+}
+
+bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 {
 	Sphere *sp = dynamic_cast<Sphere*>(ob1);
 	Plane *plane = dynamic_cast<Plane*>(ob2);
@@ -118,18 +147,28 @@ void DIYPhysicsScene::sphere2plane(PhysicsObject* ob1, PhysicsObject* ob2)
 			colNormal *= -1;
 			sphere2planeCol *= -1;
 		}
+	
 
 		float intersectCol = sp->_radius - sphere2planeCol;
 		if (intersectCol > 0)
 		{
 			sp->velocity = glm::vec3(0, 0, 0);
 			sp->colour = glm::vec4(1, 0, 0, 1);
+			return true;
 		}
+		else
+		{
+			return false;
+		}
+
+		
 	}
+	else
+		return false;
 }
 
 
-bool DIYPhysicsScene::sphere2sphere(PhysicsObject * obj1, PhysicsObject * obj2)
+bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 {
 	Sphere *sp1 = dynamic_cast<Sphere*>(obj1);
 	Sphere *sp2 = dynamic_cast<Sphere*>(obj2);
@@ -151,13 +190,38 @@ bool DIYPhysicsScene::sphere2sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 			sp1->velocity = glm::vec3(0, 0, 0);
 			//sp2->velocity = glm::vec3(0, 0, 0);
-			m_pObj->applyForcetoActor(newBall, gravity / m_pObj->mass);
-			newBall->applyForcetoActor(m_pObj, gravity / newBall->mass);
+
+			obj1->applyForcetoActor(obj2, gravity / obj1->mass);
+			obj2->applyForcetoActor(obj1, gravity / obj2->mass);
 			return true;
 
 		}
+		else
+		{
+			return false;
+		}
 	}
 	else return false;
+}
+
+bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
+{
+	return false;
+}
+
+bool DIYPhysicsScene::box2Plane(PhysicsObject * ob1, PhysicsObject * ob2)
+{
+	return false;
+}
+
+bool DIYPhysicsScene::box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
+{
+	return false;
+}
+
+bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
+{
+	return false;
 }
 
 void DIYPhysicsScene::updateGizmos()

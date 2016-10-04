@@ -17,7 +17,7 @@ public:
 
 	DIYPhysicsScene();
 	void AddActor(PhysicsObject * obj);
-	glm::vec3 gravity;
+
 	float timeStep;
 	std::vector<PhysicsObject*> actors;
 	//void AddActor(PhysicsObject*);  
@@ -28,14 +28,22 @@ public:
 	void setUp();
 	void OnUpdate(float deltaTime);
 	void SetWindow(GLFWwindow* pWindow) { m_window = pWindow; }
-	static void plane2plane(PhysicsObject* ob1, PhysicsObject* ob2);
-	static void plane2sphere(PhysicsObject* ob1, PhysicsObject* ob2);
-	static void sphere2plane(PhysicsObject* ob1, PhysicsObject* ob2);
-	bool sphere2sphere(PhysicsObject* obj1, PhysicsObject* obj2);
+
+	static bool plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2);
+	static bool plane2Sphere(PhysicsObject* ob1, PhysicsObject* ob2);
+	static bool plane2Box(PhysicsObject * obj1, PhysicsObject * obj2);
+
+	static bool sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2);
+	static bool sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2);
+	static bool sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2);
+
+	static bool box2Plane(PhysicsObject* ob1, PhysicsObject* ob2);
+	static bool box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2);
+	static bool box2Box(PhysicsObject * obj1, PhysicsObject * obj2);
 
 private:
 	void update(float deltaTime);
-
+	
 	void checkForCol();
 	int m_width;
 	int m_height;
@@ -52,3 +60,5 @@ private:
 	std::vector<Sphere*> ballActor;
 	Plane* newPlane;
 };
+
+static glm::vec3 gravity;

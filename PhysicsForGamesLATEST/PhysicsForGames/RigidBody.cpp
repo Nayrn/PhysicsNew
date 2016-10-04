@@ -19,10 +19,12 @@ RigidBody::~RigidBody()
 void RigidBody::update(glm::vec3 gravity, float timeStep)
 {
 	//timeStep = glfwGetTime();
-
-	velocity += acceleration * timeStep;
-	m_position += velocity * timeStep;
-
+	if (dynamicObj)
+	{
+		velocity += acceleration * timeStep;
+		m_position += velocity * timeStep;
+	}
+	
 	acceleration = glm::vec3(0.0f);
 }
 
@@ -35,7 +37,7 @@ void RigidBody::applyForce(glm::vec3 force)
 	acceleration += force / mass;
 }
 
-void RigidBody::applyForcetoActor(RigidBody * actor2, glm::vec3 force)
-{	
+void RigidBody::applyForcetoActor(PhysicsObject * actor2, glm::vec3 force)
+{
 	acceleration += force * actor2->mass;
 }

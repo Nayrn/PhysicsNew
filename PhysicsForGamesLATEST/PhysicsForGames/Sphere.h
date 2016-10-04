@@ -10,6 +10,7 @@ public:
 
 	glm::vec3 acceleration;
 	virtual void makeGizmo();
-	
+	~Sphere();
+	Sphere();
 
 };

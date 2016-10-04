@@ -12,11 +12,14 @@ public:
 	glm::vec4 colour;
 	glm::vec3 acceleration;
 	float mass;
+	float elasticity;
+	float drag;
+	int userInt;
 	float rotation2D; // only need a single float to represent rotation
 	void update(glm::vec3 gravity, float timeStep) override; // timestep == deltaTime?
 	virtual void debug();
 	void applyForce(glm::vec3 force);
-	void applyForcetoActor(RigidBody* actor2, glm::vec3 force);
+	void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) override;
 	bool isKinematic;
 	bool dynamicObj;
 };

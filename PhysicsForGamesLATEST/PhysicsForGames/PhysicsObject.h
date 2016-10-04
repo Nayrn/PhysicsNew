@@ -9,10 +9,10 @@
 enum ShapeType
 {
 	PLANE = 0,
-	SPHERE = 1,
-	BOX = 2,
-	JOINT = 3,
-	NUMBERSHAPE
+	SPHERE,
+	BOX,
+	NUMBERSHAPE,
+	JOINT,
 };
 
 class PhysicsObject
@@ -25,5 +25,6 @@ public:
 	virtual void  makeGizmo() = 0;
 	virtual void  resetPosition(glm::vec3 a_position) {};
 	float m_deltaTime;
-
+	float mass;
+	virtual void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) {};
 };

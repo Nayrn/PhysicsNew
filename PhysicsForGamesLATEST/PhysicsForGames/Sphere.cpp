@@ -17,3 +17,11 @@ void Sphere::makeGizmo()
 {
 	Gizmos::addSphere(m_position, _radius, 10, 10, m_colour);	
 }
+
+Sphere::~Sphere()
+{
+}
+
+Sphere::Sphere()
+{
+}
