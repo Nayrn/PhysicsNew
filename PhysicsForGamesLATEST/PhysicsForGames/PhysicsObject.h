@@ -25,6 +25,6 @@ public:
 	virtual void  makeGizmo() = 0;
 	virtual void  resetPosition(glm::vec3 a_position) {};
 	float m_deltaTime;
-	float mass;
+	float m_mass;
 	virtual void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) {};
 };
