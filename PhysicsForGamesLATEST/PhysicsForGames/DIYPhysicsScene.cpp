@@ -63,9 +63,7 @@ void DIYPhysicsScene::update(float deltaTime)
 	}
 
 	checkForCol();
-
-	//Gizmos::draw(glm::ortho<float>(-100, 100, -100 / m_AR, 100 / m_AR, -1.0f, 1.0f));
-	//spring->draw(springBall->m_position, springBall1->m_position);
+// -- TURNING ON GRAVITY -- //
 	//
 	//if (glfwGetKey(m_window, 77))
 	//{
@@ -191,8 +189,8 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 			sp1->velocity = glm::vec3(0, 0, 0);
 			//sp2->velocity = glm::vec3(0, 0, 0);
 
-			obj1->applyForcetoActor(obj2, gravity / obj1->mass);
-			obj2->applyForcetoActor(obj1, gravity / obj2->mass);
+			obj1->applyForcetoActor(obj2, gravity / obj1->m_mass);
+			obj2->applyForcetoActor(obj1, gravity / obj2->m_mass);
 			return true;
 
 		}
