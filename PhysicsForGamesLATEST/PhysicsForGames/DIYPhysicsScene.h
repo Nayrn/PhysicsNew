@@ -10,6 +10,7 @@
 #include "Sphere.h"
 #include "SpringJoint.h"
 #include "Plane.h"
+#include "Box.h"
 
 class DIYPhysicsScene 
 {
@@ -20,7 +21,6 @@ public:
 
 	float timeStep;
 	std::vector<PhysicsObject*> actors;
-	//void AddActor(PhysicsObject*);  
 	void removeActor(PhysicsObject*);
 	void updateGizmos();
 	void debugScene();
@@ -44,11 +44,13 @@ public:
 private:
 	void update(float deltaTime);
 	
-	void checkForCol();
+	bool checkForCol();
+	static void calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* obj2, glm::vec3 normal, float distance);
 	int m_width;
 	int m_height;
 	int m_AR;
 	int m_numObjects;
+	float m_mass;
 	Sphere* m_pObj;
 	Sphere* newBall;
 	Sphere* magnet;
@@ -59,6 +61,8 @@ private:
 	SpringJoint * spring;
 	std::vector<Sphere*> ballActor;
 	Plane* newPlane;
+	Box* boxOne;
+	Box* boxTwo;
 };
 
 static glm::vec3 gravity;

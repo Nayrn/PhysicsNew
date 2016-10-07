@@ -16,7 +16,7 @@ public:
 	float drag;
 	int userInt;
 	float rotation2D; // only need a single float to represent rotation
-	void update(glm::vec3 gravity, float timeStep) override; // timestep == deltaTime?
+	void update(glm::vec3 gravity, float timeStep) override; 
 	virtual void debug();
 	void applyForce(glm::vec3 force);
 	void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) override;

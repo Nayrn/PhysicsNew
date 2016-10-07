@@ -14,7 +14,7 @@ public:
 	void resetPosition(glm::vec3 m_vNewPos) override { m_position = m_vNewPos; };
 	
 	glm::vec3 m_vNewPos;
-	//void Draw(); just put in the line connecting gizmos
+
 protected:
 
 private:

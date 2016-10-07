@@ -7,23 +7,23 @@ DIYPhysicsScene::DIYPhysicsScene()
 	m_height = 720;
 	m_AR = m_width / m_height;
 	m_numObjects = actors.size();
-	m_pObj = new Sphere(glm::vec3(20, 30, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 1, 0, 1));  
+	m_pObj = new Sphere(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 1, 0, 1));  
 	newBall = new Sphere(glm::vec3(40, 10, 10), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
-
+	// -- box centre is position --
+	boxOne = new Box(glm::vec3(1, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 0.1f);
+	boxTwo = new Box(glm::vec3(0, 30, 1), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 0.1f);
 	
 
 	springBall = new Sphere;
 	springBall1 = new Sphere;
 	
-	
-
 	newPlane = new Plane(glm::vec3(0, 1, 0.), 1.0f);
 
 	springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 	springBall->drag = 0;
 	springBall->elasticity = 0.9f;
 	springBall->dynamicObj = false;
-
+	
 	int numberBalls = 5;
 	for (int i = 1; i < numberBalls; i++)
 	{
@@ -34,7 +34,6 @@ DIYPhysicsScene::DIYPhysicsScene()
 		AddActor(springBall1);
 		spring = new SpringJoint(springBall, springBall1, 0.1f, .999f);
 		AddActor(spring);
-		//springBall = springBall1;
 	}
 }
 
@@ -61,31 +60,27 @@ void DIYPhysicsScene::update(float deltaTime)
 		(*it)->makeGizmo();
 		(*it)->update(gravity, deltaTime);
 	}
-
+	
 	checkForCol();
+	
+	
+	//sphere2Plane(m_pObj, newPlane);  -- Shouldn't need this but do for some reason??
 
-	//Gizmos::draw(glm::ortho<float>(-100, 100, -100 / m_AR, 100 / m_AR, -1.0f, 1.0f));
-	//spring->draw(springBall->m_position, springBall1->m_position);
-	//
-	//if (glfwGetKey(m_window, 77))
-	//{
-	//	newBall->applyForce(glm::vec3(10, 0, 0));
-	//}
-	//if (glfwGetKey(m_window, 78) == GLFW_PRESS)
-	//{
-	//	newBall->applyForce(gravity);
-	//	m_pObj->applyForce(gravity);
-	//
-	//}
-	//
-	//float sp2sp = glm::distance(m_pObj->m_position, newBall->m_position);
-	////std::cout << m_pObj->velocity.x << std::endl;
-	//float sphere2planeCol = glm::dot(m_pObj->m_position, newPlane->m_vNormal) - newPlane->m_fDistance;
-	//std::cout << sphere2planeCol << std::endl;
+	if (glfwGetKey(m_window, 77))
+	{
+		newBall->applyForce(glm::vec3(10, 0, 0));
+	}
+	if (glfwGetKey(m_window, 78) == GLFW_PRESS)
+	{
+		newBall->applyForce(gravity);
+		m_pObj->applyForce(gravity);
+	
+	}
+
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
-//function pointer array for doing collisions
+//function pointer array for doing collisions -- THIS SUDDENLY DOESN'T WORK --- HECK ---- DOING ME A FRIGHT ---
 static fn collisionfunctionArray[] =
 {
 	DIYPhysicsScene::plane2Plane,	DIYPhysicsScene::plane2Sphere, DIYPhysicsScene::plane2Box,
@@ -94,7 +89,7 @@ static fn collisionfunctionArray[] =
 
 };
 
-void DIYPhysicsScene::checkForCol()
+bool DIYPhysicsScene::checkForCol() //--- ALSO HECK---
 {
 	int actorCount = actors.size();
 
@@ -112,9 +107,28 @@ void DIYPhysicsScene::checkForCol()
 			fn colFunPtr = collisionfunctionArray[functionIndex];
 			
 			if (colFunPtr != NULL)
+			{
 				colFunPtr(obj1, obj2);
+				return true;
+			}
+
 		}
 	}
+	return false;
+}
+
+void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* obj2, glm::vec3 normal, float distance)
+{
+	float dist = distance;
+	glm::vec3 norm = normal;
+	float totalMass = obj1->m_mass + obj2->m_mass;
+	float ob1Rat = obj2->m_mass / totalMass;
+	float ob2Rat = obj1->m_mass / totalMass;
+
+
+	obj1->m_position = obj1->m_position - ob1Rat *  dist * norm;
+	obj2->m_position = obj2->m_position + ob2Rat * dist * norm;
+
 }
 
 bool DIYPhysicsScene::plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
@@ -124,7 +138,10 @@ bool DIYPhysicsScene::plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 
 bool DIYPhysicsScene::plane2Sphere(PhysicsObject* ob1, PhysicsObject* ob2)
 {
-	return sphere2Plane(ob2, ob1);
+	if (sphere2Plane(ob2, ob1))
+		return true;
+	else
+		return false;
 }
 
 bool DIYPhysicsScene::plane2Box(PhysicsObject * obj1, PhysicsObject * obj2)
@@ -141,7 +158,7 @@ bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 	{
 		glm::vec3 colNormal = plane->m_vNormal;
 		float sphere2planeCol = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
-		// the thing is in the tutorial, you need to change plane's stuff to vec3
+		
 		if (sphere2planeCol < 0)
 		{
 			colNormal *= -1;
@@ -150,8 +167,11 @@ bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 	
 
 		float intersectCol = sp->_radius - sphere2planeCol;
+		
 		if (intersectCol > 0)
 		{
+			calcRatioAndSeperate(plane, sp, colNormal, intersectCol);
+
 			sp->velocity = glm::vec3(0, 0, 0);
 			sp->colour = glm::vec4(1, 0, 0, 1);
 			return true;
@@ -182,8 +202,13 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 		
 
-		if (col < -1) //colliding
+		if (col <= 0) //colliding
 		{
+			glm::vec3 normal = sp2->m_position - sp1->m_position;
+			normal = glm::normalize(normal);
+
+			calcRatioAndSeperate(sp1, sp2, normal, col);
+
 			// set colour to red if overlapping and set velocity to 0
 			sp1->m_colour = glm::vec4(1, 0, 0, 1);
 			sp2->m_colour = glm::vec4(1, 0, 0, 1);
@@ -191,8 +216,8 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 			sp1->velocity = glm::vec3(0, 0, 0);
 			//sp2->velocity = glm::vec3(0, 0, 0);
 
-			obj1->applyForcetoActor(obj2, gravity / obj1->mass);
-			obj2->applyForcetoActor(obj1, gravity / obj2->mass);
+			obj1->applyForcetoActor(obj2, gravity / obj1->m_mass);
+			obj2->applyForcetoActor(obj1, gravity / obj2->m_mass);
 			return true;
 
 		}
@@ -221,6 +246,24 @@ bool DIYPhysicsScene::box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
+	Box* box1 = dynamic_cast<Box*>(obj1);
+	Box* box2 = dynamic_cast<Box*>(obj2);
+
+	// extents is key to AABB max & min
+	// X max
+	float maxXB1 = box1->centre.x + box1->extents.x; // go off this thing
+	float maxXB2 = box2->extents.x;
+
+	// Y max
+	float maxYB1 = box1->extents.y;
+	float maxYB2 = box2->extents.y;
+
+	// Z max
+	float maxZB1 = box1->extents.z;
+	float maxZB2 = box2->extents.z;
+
+	// --HOW TO HECKING FIND MINIMUM???--
+
 	return false;
 }
 
@@ -262,8 +305,9 @@ void DIYPhysicsScene::setUp()
 	AddActor(springBall1);
 	AddActor(spring);
 	AddActor(newPlane);
-	newBall->update(gravity, deltaTime);	
-	OnUpdate(deltaTime);
+	AddActor(boxOne);
+	AddActor(boxTwo);
+	//OnUpdate(deltaTime);
 	
 
 
@@ -275,6 +319,5 @@ void DIYPhysicsScene::OnUpdate(float deltaTime)
 {
 	updateGizmos();
 	update(deltaTime);
-	spring->update(glm::vec3(0, 10, 0), deltaTime);
-
+	
 }

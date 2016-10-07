@@ -1,6 +1,11 @@
 ﻿  DIYPhysicsScene.cpp
 c:\users\emily.ryan\documents\physicsnew\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(22): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\emily.ryan\documents\physicsnew\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(30): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\emily.ryan\documents\physicsnew\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(249): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\emily.ryan\documents\physicsnew\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(250): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\emily.ryan\documents\physicsnew\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(285): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\emily.ryan\documents\physicsnew\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(286): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  main.cpp
+  Physics.cpp
+  Box.cpp
   PhysicsForGames.vcxproj -> C:\Users\emily.ryan\Documents\PhysicsNew\PhysicsForGamesLATEST\Debug\PhysicsForGames.exe

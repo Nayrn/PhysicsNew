@@ -5,7 +5,8 @@
 #include "Gizmos.h"
 #include "glm/ext.hpp"
 #include "glm/gtc/quaternion.hpp"
-
+#include "Shapes.h"
+//#include "RigidBody.h"
 enum ShapeType
 {
 	PLANE = 0,
@@ -27,4 +28,9 @@ public:
 	float m_deltaTime;
 	float m_mass;
 	virtual void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) {};
+	bool hasRB;
+//	RigidBody* rb;
+
 };
+
+
