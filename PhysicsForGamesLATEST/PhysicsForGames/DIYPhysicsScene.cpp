@@ -10,7 +10,7 @@ DIYPhysicsScene::DIYPhysicsScene()
 	m_pObj = new Sphere(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 1, 0, 1));  
 	newBall = new Sphere(glm::vec3(40, 10, 10), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
 	// -- box centre is position --
-	boxOne = new Box(glm::vec3(1, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 0.1f);
+	boxOne = new Box(glm::vec3(1, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
 	boxTwo = new Box(glm::vec3(0, 30, 1), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 0.1f);
 	
 
@@ -63,24 +63,25 @@ void DIYPhysicsScene::update(float deltaTime)
 	
 	checkForCol();
 	
-	
-	//sphere2Plane(m_pObj, newPlane);  -- Shouldn't need this but do for some reason??
+
 
 	if (glfwGetKey(m_window, 77))
 	{
 		newBall->applyForce(glm::vec3(10, 0, 0));
+		;
 	}
 	if (glfwGetKey(m_window, 78) == GLFW_PRESS)
 	{
 		newBall->applyForce(gravity);
 		m_pObj->applyForce(gravity);
-	
+		boxOne->applyForce(gravity);
+		boxTwo->applyForce(gravity);
 	}
 
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
-//function pointer array for doing collisions -- THIS SUDDENLY DOESN'T WORK --- HECK ---- DOING ME A FRIGHT ---
+//function pointer array for doing collisions 
 static fn collisionfunctionArray[] =
 {
 	DIYPhysicsScene::plane2Plane,	DIYPhysicsScene::plane2Sphere, DIYPhysicsScene::plane2Box,
@@ -89,10 +90,10 @@ static fn collisionfunctionArray[] =
 
 };
 
-bool DIYPhysicsScene::checkForCol() //--- ALSO HECK---
+bool DIYPhysicsScene::checkForCol()
 {
 	int actorCount = actors.size();
-
+	bool wasCollision = false;
 	for (int outer = 0; outer < actorCount - 1; outer++)
 	{
 		for (int inner = outer + 1; inner < actorCount; inner++)
@@ -108,13 +109,12 @@ bool DIYPhysicsScene::checkForCol() //--- ALSO HECK---
 			
 			if (colFunPtr != NULL)
 			{
-				colFunPtr(obj1, obj2);
-				return true;
+				wasCollision = colFunPtr(obj1, obj2) || wasCollision;
 			}
 
 		}
 	}
-	return false;
+	return wasCollision;
 }
 
 void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* obj2, glm::vec3 normal, float distance)
@@ -231,6 +231,25 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
+	Sphere* sp = dynamic_cast<Sphere*>(obj1);
+	Box* box = dynamic_cast<Box*>(obj2);
+	
+	float dist = glm::distance(sp->m_position, box->m_position);
+	glm::vec3 normal = sp->m_position - box->m_position;
+	normal = glm::normalize(normal);
+
+
+
+	//-- is probably extents - radius
+	float x = box->extents.x + dist - sp->_radius;
+	float y = box->extents.y + dist - sp->_radius;
+	float z = box->extents.z + dist - sp->_radius;
+	if(x <= 0 || y <= 0 || z <= 0) 
+		calcRatioAndSeperate(sp, box, normal, dist);
+
+
+
+
 	return false;
 }
 
@@ -248,22 +267,36 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
 	Box* box1 = dynamic_cast<Box*>(obj1);
 	Box* box2 = dynamic_cast<Box*>(obj2);
-
+	float dist = glm::distance(box1->m_position, box2->m_position);
+	glm::vec3 norm = box1->m_position - box2->m_position;
+	norm = glm::normalize(norm);
 	// extents is key to AABB max & min
-	// X max
-	float maxXB1 = box1->centre.x + box1->extents.x; // go off this thing
-	float maxXB2 = box2->extents.x;
+	// -- Box1 -- //
+	glm::vec3 MaxB1 = box1->centre + box1->extents;
+	glm::vec3 MinB1 = box1->centre - box1->extents;
 
-	// Y max
-	float maxYB1 = box1->extents.y;
-	float maxYB2 = box2->extents.y;
+	// --Box 2 -- //
+	glm::vec3 MaxB2 = box2->centre + box2->extents;
+	glm::vec3 MinB2 = box2->centre - box2->extents;
 
-	// Z max
-	float maxZB1 = box1->extents.z;
-	float maxZB2 = box2->extents.z;
+	bool isCol = false;
 
-	// --HOW TO HECKING FIND MINIMUM???--
+	if (MinB1.x <= MaxB2.x && MaxB1.x >= MinB2.x)
+		isCol = true;
+	else if (MinB1.y <= MaxB2.y && MaxB1.y >= MinB2.y)
+		isCol = true;
+	else if (MinB1.z <= MaxB2.z && MaxB1.z >= MinB2.z)
+		isCol = true;
+	else
+		isCol = false;
 
+
+	if (isCol)
+	{
+		calcRatioAndSeperate(box1, box2, norm, dist);
+		return true;
+	}
+	else
 	return false;
 }
 
