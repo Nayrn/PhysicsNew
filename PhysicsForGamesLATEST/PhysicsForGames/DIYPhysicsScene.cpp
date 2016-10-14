@@ -101,7 +101,7 @@ bool DIYPhysicsScene::checkForCol()
 			PhysicsObject* obj1 = actors[outer];
 			PhysicsObject* obj2 = actors[inner];
 			if (obj1 == obj2)
-				break;
+			 obj1 = dynamic_cast<PhysicsObject*>(obj1);
 			else
 			{
 				int _shapeID1 = obj1->m_shapeID;
@@ -250,11 +250,11 @@ bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	//-- is probably extents - radius
 	float x = (box->extents.x + dist) - sp->_radius;
 	float y = (box->extents.y + dist) - sp->_radius;   // something not right in this calculation
-	float z = (box->extents.z + dist) - sp->_radius;	// calculation off by roughly 0.96 world unit(s)
-	std::cout << x << y << z << std::endl;
-	if (x <= 0.5 || y <= 0.5 || z <= 0.5)
+	float z = (box->extents.z + dist) - sp->_radius;	// calculation off by roughly 0.9 world unit(s)
+	std::cout << sp->velocity.y << std::endl;				// collision is wrong, resolution is great
+	if (x <= 0 || y <= 0 || z <= 0)
 	{
-		system("pause");
+		//system("pause");
 		calcRatioAndSeperate(sp, box, normal, dist);  
 	}
 
