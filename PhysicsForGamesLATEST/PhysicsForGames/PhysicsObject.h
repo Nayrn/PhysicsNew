@@ -26,7 +26,7 @@ public:
 	virtual void  makeGizmo() = 0;
 	virtual void  resetPosition(glm::vec3 a_position) {};
 	float m_deltaTime;
-	float m_mass;
+	float m_massPO;
 	virtual void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) {};
 	bool hasRB;
 //	RigidBody* rb;

@@ -5,8 +5,10 @@ RigidBody::RigidBody(glm::vec3 position, glm::vec3 velocity, glm::quat rotation,
 {
 	acceleration = velocity / glfwGetTime();
 	m_position = position;
-	mass = m_mass;
+	m_mass = mass;
+	m_mass = m_massPO;
 }
+
 
 RigidBody::RigidBody()
 {
@@ -35,10 +37,10 @@ void RigidBody::debug()
 
 void RigidBody::applyForce(glm::vec3 force)
 {			
-	acceleration += force / mass;
+	acceleration += force / m_mass;
 }
 
 void RigidBody::applyForcetoActor(PhysicsObject * actor2, glm::vec3 force)
 {
-	acceleration += force * actor2->m_mass;
+	acceleration += force * m_mass;
 }

@@ -2,7 +2,7 @@
 // edit to include 2nd ball
 DIYPhysicsScene::DIYPhysicsScene()
 {
-
+	
 	m_width = 1280;
 	m_height = 720;
 	m_AR = m_width / m_height;
@@ -11,14 +11,14 @@ DIYPhysicsScene::DIYPhysicsScene()
 	newBall = new Sphere(glm::vec3(40, 10, 10), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
 	// -- box centre is position --
 	boxOne = new Box(glm::vec3(1, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
-	boxTwo = new Box(glm::vec3(0, 30, 1), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 0.1f);
+	boxTwo = new Box(glm::vec3(0, 30, 1), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
 	
 
 	springBall = new Sphere;
 	springBall1 = new Sphere;
 	
 	newPlane = new Plane(glm::vec3(0, 1, 0.), 1.0f);
-
+	newPlane->m_massPO = 1000.0f;
 	springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 	springBall->drag = 0;
 	springBall->elasticity = 0.9f;
@@ -68,15 +68,14 @@ void DIYPhysicsScene::update(float deltaTime)
 	if (glfwGetKey(m_window, 77))
 	{
 		newBall->applyForce(glm::vec3(10, 0, 0));
-		;
+		
 	}
-	if (glfwGetKey(m_window, 78) == GLFW_PRESS)
-	{
+
 		newBall->applyForce(gravity);
 		m_pObj->applyForce(gravity);
 		boxOne->applyForce(gravity);
 		boxTwo->applyForce(gravity);
-	}
+	
 
 }
 
@@ -96,20 +95,26 @@ bool DIYPhysicsScene::checkForCol()
 	bool wasCollision = false;
 	for (int outer = 0; outer < actorCount - 1; outer++)
 	{
-		for (int inner = outer + 1; inner < actorCount; inner++)
+		for (int inner = outer + 1 ; inner < actorCount; inner++)
 		{
+
 			PhysicsObject* obj1 = actors[outer];
 			PhysicsObject* obj2 = actors[inner];
-			int _shapeID1 = obj1->m_shapeID;
-			int _shapeID2 = obj2->m_shapeID;
-			if (_shapeID1 >= NUMBERSHAPE || _shapeID2 >= NUMBERSHAPE) continue;
-
-			int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2; 
-			fn colFunPtr = collisionfunctionArray[functionIndex];
-			
-			if (colFunPtr != NULL)
+			if (obj1 == obj2)
+				break;
+			else
 			{
-				wasCollision = colFunPtr(obj1, obj2) || wasCollision;
+				int _shapeID1 = obj1->m_shapeID;
+				int _shapeID2 = obj2->m_shapeID;
+				if (_shapeID1 >= NUMBERSHAPE || _shapeID2 >= NUMBERSHAPE) continue;
+
+				int functionIndex = (_shapeID1 * NUMBERSHAPE) + _shapeID2;
+				fn colFunPtr = collisionfunctionArray[functionIndex];
+
+				if (colFunPtr != NULL)
+				{
+					wasCollision = colFunPtr(obj1, obj2) || wasCollision;
+				}
 			}
 
 		}
@@ -121,9 +126,9 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 {
 	float dist = distance;
 	glm::vec3 norm = normal;
-	float totalMass = obj1->m_mass + obj2->m_mass;
-	float ob1Rat = obj2->m_mass / totalMass;
-	float ob2Rat = obj1->m_mass / totalMass;
+	float totalMass = obj1->m_massPO + obj2->m_massPO;
+	float ob1Rat = obj2->m_massPO / totalMass;
+	float ob2Rat = obj1->m_massPO / totalMass;
 
 
 	obj1->m_position = obj1->m_position - ob1Rat *  dist * norm;
@@ -159,7 +164,7 @@ bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 		glm::vec3 colNormal = plane->m_vNormal;
 		float sphere2planeCol = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
 		
-		if (sphere2planeCol < 0)
+		if (sphere2planeCol <= 0)
 		{
 			colNormal *= -1;
 			sphere2planeCol *= -1;
@@ -205,7 +210,7 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 		if (col <= 0) //colliding
 		{
 			glm::vec3 normal = sp2->m_position - sp1->m_position;
-			normal = glm::normalize(normal);
+			//normal = glm::normalize(normal);
 
 			calcRatioAndSeperate(sp1, sp2, normal, col);
 
@@ -216,8 +221,8 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 			sp1->velocity = glm::vec3(0, 0, 0);
 			//sp2->velocity = glm::vec3(0, 0, 0);
 
-			obj1->applyForcetoActor(obj2, gravity / obj1->m_mass);
-			obj2->applyForcetoActor(obj1, gravity / obj2->m_mass);
+			obj1->applyForcetoActor(obj2, gravity / obj1->m_massPO);
+			obj2->applyForcetoActor(obj1, gravity / obj2->m_massPO);
 			return true;
 
 		}
@@ -238,16 +243,20 @@ bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	glm::vec3 normal = sp->m_position - box->m_position;
 	normal = glm::normalize(normal);
 
+	glm::vec3 MaxBox = box->centre + box->extents;
+	glm::vec3 MinBox = box->centre - box->extents;
 
 
 	//-- is probably extents - radius
-	float x = box->extents.x + dist - sp->_radius;
-	float y = box->extents.y + dist - sp->_radius;
-	float z = box->extents.z + dist - sp->_radius;
-	if(x <= 0 || y <= 0 || z <= 0) 
-		calcRatioAndSeperate(sp, box, normal, dist);
-
-
+	float x = (box->extents.x + dist) - sp->_radius;
+	float y = (box->extents.y + dist) - sp->_radius;   // something not right in this calculation
+	float z = (box->extents.z + dist) - sp->_radius;	// calculation off by roughly 0.96 world unit(s)
+	std::cout << x << y << z << std::endl;
+	if (x <= 0.5 || y <= 0.5 || z <= 0.5)
+	{
+		system("pause");
+		calcRatioAndSeperate(sp, box, normal, dist);  
+	}
 
 
 	return false;

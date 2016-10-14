@@ -11,7 +11,7 @@ public:
 	glm::vec3 velocity;
 	glm::vec4 colour;
 	glm::vec3 acceleration;
-	float mass;
+	float m_mass;
 	float elasticity;
 	float drag;
 	int userInt;
