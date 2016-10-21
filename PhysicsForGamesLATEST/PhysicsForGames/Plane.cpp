@@ -31,7 +31,7 @@ Plane::Plane(glm::vec3 normal, float distance)
 	m_vNormal = normal;
 	m_fDistance = distance;
 	m_shapeID = PLANE;
-	dynamicObj = false;
+	rb->dynamicObj = false;
 
 }
 

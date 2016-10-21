@@ -3,14 +3,17 @@
 
 Sphere::Sphere(glm::vec3 position, glm::vec3 velocity, float a_mass, float radius, glm::vec4 colour)
 {
+	// NULL REFERENCE, NEW THE MEMORY FOR RB
 	_radius = radius;
 	m_position = position;
 	m_colour = colour;
 	acceleration = velocity / glfwGetTime();
 	makeGizmo();   	
-	m_mass = a_mass;
-	m_massPO = m_mass;
+	rb->m_mass = a_mass;
+	m_massPO = rb->m_mass;
 	m_shapeID = SPHERE;
+	hasRB = true;
+
 }
 
 
