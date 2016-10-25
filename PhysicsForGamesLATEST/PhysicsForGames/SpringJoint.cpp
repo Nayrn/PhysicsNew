@@ -3,6 +3,7 @@
 #include "Gizmos.h"
 SpringJoint::SpringJoint(RigidBody * connection1, RigidBody * connection2, float springCoefficient, float damping)
 {
+	
 	m_connections[0] = connection1;
 	m_connections[1] = connection2;
 	m_springCoefficient = springCoefficient;
@@ -18,6 +19,7 @@ SpringJoint::SpringJoint()
 
 SpringJoint::~SpringJoint()
 {
+	delete this;
 }
 
 void SpringJoint::update(glm::vec3 a_gravity, float timeStep)

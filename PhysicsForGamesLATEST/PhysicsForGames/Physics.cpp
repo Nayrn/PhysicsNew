@@ -67,9 +67,7 @@ bool Physics::update()
 
     m_camera.update(1.0f / 60.0f);
 	m_pScene->OnUpdate(m_delta_time);
-	
-
-	
+		
     return true;
 }
 

@@ -1,8 +1,8 @@
 #pragma once
-#include "PhysicsObject.h"
+#include "RigidBody.h"
 
 
-class Box : public PhysicsObject
+class Box : public RigidBody
 {
 public:
 	void virtual update(glm::vec3 gravity, float timeStep) {};

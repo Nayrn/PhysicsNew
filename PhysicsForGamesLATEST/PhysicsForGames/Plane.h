@@ -1,7 +1,7 @@
 #pragma once
+#include "RigidBody.h"
 
-#include "PhysicsObject.h"
-class Plane : public PhysicsObject
+class Plane : public RigidBody
 {
 public:
 	glm::vec3 m_vNormal;

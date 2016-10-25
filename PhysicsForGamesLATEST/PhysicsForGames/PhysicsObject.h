@@ -6,7 +6,7 @@
 #include "glm/ext.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "Shapes.h"
-#include "RigidBody.h"
+
 
 enum ShapeType
 {
@@ -30,7 +30,7 @@ public:
 	float m_massPO;
 	virtual void applyForcetoActor(PhysicsObject* actor2, glm::vec3 force) {};
 	bool hasRB;
-	RigidBody* rb;
+	
 
 };
 

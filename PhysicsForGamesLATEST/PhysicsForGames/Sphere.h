@@ -1,7 +1,7 @@
 #pragma once
-#include "PhysicsObject.h"
+#include "RigidBody.h"
 
-class Sphere : public PhysicsObject
+class Sphere : public RigidBody
 {
 public:
 	float _radius;

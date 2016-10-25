@@ -1,3 +1,4 @@
-﻿  LINK : C:\Users\emily.ryan\Documents\PhysicsNew\PhysicsForGamesLATEST\Debug\PhysicsForGames.exe not found or not built by the last incremental link; performing full link
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  Sphere.cpp
+  Box.cpp
+  Generating Code...
   PhysicsForGames.vcxproj -> C:\Users\emily.ryan\Documents\PhysicsNew\PhysicsForGamesLATEST\Debug\PhysicsForGames.exe

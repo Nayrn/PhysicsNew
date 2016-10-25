@@ -31,8 +31,9 @@ Plane::Plane(glm::vec3 normal, float distance)
 	m_vNormal = normal;
 	m_fDistance = distance;
 	m_shapeID = PLANE;
-	rb->dynamicObj = false;
-
+	
+	dynamicObj = false;
+	
 }
 
 Plane::Plane()
@@ -41,4 +42,5 @@ Plane::Plane()
 
 Plane::~Plane()
 {
+	delete this;
 }

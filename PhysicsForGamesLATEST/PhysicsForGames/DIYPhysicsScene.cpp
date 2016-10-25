@@ -1,9 +1,8 @@
 #include "DIYPhysicsScene.h"
 #include <algorithm>
-// edit to include 2nd ball
+
 DIYPhysicsScene::DIYPhysicsScene()
 {
-	// find out where to override pure virtual functions for PhysicsObject and you'll solve all your errors
 	m_width = 1280;
 	m_height = 720;
 	m_AR = m_width / m_height;
@@ -22,19 +21,19 @@ DIYPhysicsScene::DIYPhysicsScene()
 	newPlane = new Plane(glm::vec3(0, 1, 0.), 1.0f);
 	newPlane->m_massPO = 1000.0f;
 	springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
-	springBall->rb->drag = 0;
-	springBall->rb->elasticity = 0.9f;
-	springBall->rb->dynamicObj = false;
+	springBall->drag = 0;
+	springBall->elasticity = 0.9f;
+	springBall->dynamicObj = false;
 	
 	int numberBalls = 5;
 	for (int i = 1; i < numberBalls; i++)
 	{
 		springBall1 = new Sphere(glm::vec3(30 - (i * 3), 25 - (i * 3), 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
-		springBall1->rb->drag = 0.1f;
-		springBall1->rb->elasticity = 0.9f;
-		springBall1->rb->userInt = 3;
+		springBall1->drag = 0.1f;
+		springBall1->elasticity = 0.9f;
+		springBall1->userInt = 3;
 		AddActor(springBall1);
-		spring = new SpringJoint(springBall->rb, springBall1->rb, 0.1f, .999f);
+		spring = new SpringJoint(springBall, springBall1, 0.1f, .999f);
 		AddActor(spring);
 	}
 }
@@ -51,10 +50,7 @@ void DIYPhysicsScene::removeActor(PhysicsObject * obj)
 }
 
 void DIYPhysicsScene::update(float deltaTime)
-{
-	
-	
-	
+{			
 	//Iterate through each shape in the physics scene
 	// makeGizmo()
 	for (auto it = actors.begin(); it != actors.end(); it++)
@@ -63,19 +59,12 @@ void DIYPhysicsScene::update(float deltaTime)
 		(*it)->update(gravity, deltaTime);
 	}
 	
-	checkForCol();
+		checkForCol();
 	
-
-
-		newBall->rb->applyForce(gravity);
-		m_pObj->rb->applyForce(gravity);
-		boxOne->rb->applyForce(gravity);
-		boxTwo->rb->applyForce(gravity);
-	
-
-
-	
-
+		newBall->applyForce(gravity);
+		m_pObj->applyForce(gravity);
+		boxOne->applyForce(gravity);
+		boxTwo->applyForce(gravity);
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
@@ -124,34 +113,30 @@ bool DIYPhysicsScene::checkForCol()
 
 void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* obj2, glm::vec3 normal, float distance)
 {
-	// LOOKIE
-	// this function needs the seperate part
+	//--CALCULATING RATIO HERE--
+	// this function needs the seperate part -- need to access velocity
+	RigidBody* rb1 = dynamic_cast<RigidBody*>(obj1);
+	RigidBody* rb2 = dynamic_cast<RigidBody*>(obj2);
+
 	float dist = distance;
 	glm::vec3 norm = normal;
 
-	float totalMass = obj1->m_massPO + obj2->m_massPO;
-	float ob1Rat = obj2->m_massPO / totalMass;
-	float ob2Rat = obj1->m_massPO / totalMass;
+	float totalMass = rb1->m_massPO + obj2->m_massPO;
+	float ob1Rat = rb2->m_massPO / totalMass;
+	float ob2Rat = rb1->m_massPO / totalMass;
 
 
-	obj1->m_position = obj1->m_position - ob1Rat *  dist * norm;
-	obj2->m_position = obj2->m_position + ob2Rat * dist * norm;
-	
+	rb1->m_position = rb1->m_position - ob1Rat *  dist * norm;
+	rb2->m_position = rb2->m_position + ob2Rat * dist * norm;
+
 	float avRest = 1.0f;
-	float MassA = obj1->m_massPO;
-	float MassB = obj2->m_massPO;
+	float MassA = rb1->m_massPO;
+	float MassB = rb2->m_massPO;
 	glm::vec3 relVel = glm::vec3(0);
-
-	if (obj1->hasRB)
-	{
-		
-	}
-
-	if (obj2->hasRB)
-	{
-
-	}
+	
+	//--SEPARATE OBJECTS HERE--
 }
+
 
 bool DIYPhysicsScene::plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 {
@@ -232,7 +217,7 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 			sp1->m_colour = glm::vec4(1, 0, 0, 1);
 			sp2->m_colour = glm::vec4(1, 0, 0, 1);
 
-			sp1->rb->velocity = glm::vec3(0, 0, 0);
+			sp1->velocity = glm::vec3(0, 0, 0);
 			//sp2->velocity = glm::vec3(0, 0, 0);
 
 			obj1->applyForcetoActor(obj2, gravity / obj1->m_massPO);
@@ -268,20 +253,14 @@ bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 
 	float dist = glm::length(offSet);
 	float colDist = sp->_radius - dist;
-	std::cout << colDist << std::endl;
 	
-	if (colDist >= 0.3999)
+	if (colDist > 0)
 	{
 		normal = glm::normalize(offSet);
 		calcRatioAndSeperate(sp, box, normal, dist);
 		return true;
 	}
-	
-		
-		
-	
-
-
+			
 	return false;
 }
 
@@ -351,7 +330,6 @@ void DIYPhysicsScene::addGizmos()
 
 void DIYPhysicsScene::setUp()
 {
-
 	Gizmos::create();
 
 	// do not create physics scene here, create in physics
@@ -363,24 +341,16 @@ void DIYPhysicsScene::setUp()
 
 	
 	gravity = glm::vec3(0, -10, 0);
-	timeStep = .001f;
-
+	timeStep = .001f;	
 	
-	
-	//AddActor(m_pObj);
+	AddActor(m_pObj);
 	AddActor(newBall);
-	//AddActor(springBall);
-	//AddActor(springBall1);
-	//AddActor(spring);
+	AddActor(springBall);
+	AddActor(springBall1);
+	AddActor(spring);
 	AddActor(newPlane);
-	//AddActor(boxOne);
-	//AddActor(boxTwo);
-	//OnUpdate(deltaTime);
-	
-
-
-
-
+	AddActor(boxOne);
+	AddActor(boxTwo);	
 }
 
 void DIYPhysicsScene::OnUpdate(float deltaTime)
