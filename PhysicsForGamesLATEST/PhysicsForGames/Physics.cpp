@@ -35,7 +35,9 @@ bool Physics::startup()
 
 void Physics::shutdown()
 {
+	m_pScene->shutDown();
 	delete m_renderer;
+	delete m_pScene;
     Gizmos::destroy();
     Application::shutdown();
 }

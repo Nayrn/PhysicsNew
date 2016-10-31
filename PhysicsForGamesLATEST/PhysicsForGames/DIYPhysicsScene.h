@@ -28,7 +28,7 @@ public:
 	void setUp();
 	void OnUpdate(float deltaTime);
 	void SetWindow(GLFWwindow* pWindow) { m_window = pWindow; }
-
+	void shutDown();
 	static bool plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2);
 	static bool plane2Sphere(PhysicsObject* ob1, PhysicsObject* ob2);
 	static bool plane2Box(PhysicsObject * obj1, PhysicsObject * obj2);

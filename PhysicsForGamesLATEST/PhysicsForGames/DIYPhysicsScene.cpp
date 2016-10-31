@@ -1,6 +1,6 @@
 #include "DIYPhysicsScene.h"
 #include <algorithm>
-
+//RIGIDBODYS UPDATE NOT BEING CALLED
 DIYPhysicsScene::DIYPhysicsScene()
 {
 	m_width = 1280;
@@ -60,11 +60,11 @@ void DIYPhysicsScene::update(float deltaTime)
 	}
 	
 		checkForCol();
-	
 		newBall->applyForce(gravity);
 		m_pObj->applyForce(gravity);
 		boxOne->applyForce(gravity);
 		boxTwo->applyForce(gravity);
+		
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
@@ -135,6 +135,8 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 	glm::vec3 relVel = glm::vec3(0);
 	
 	//--SEPARATE OBJECTS HERE--
+	// will return ratio from 0.0f to 1.0f, separate based on that
+	
 }
 
 
@@ -247,7 +249,6 @@ bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	if (std::abs(offSet.z) > 0)
 		offSet.z = std::min(std::abs(offSet.z), box->extents.z) * (std::abs(offSet.z) / offSet.z);
 
-	// collision is wrong, resolution is great
 	glm::vec3 boxCol = box->m_position + offSet;
 	offSet = boxCol - sp->m_position;
 
@@ -279,6 +280,7 @@ bool DIYPhysicsScene::box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
+	// deltaTime and mass are negative for box1 & 2, returning NaN for pos
 	Box* box1 = dynamic_cast<Box*>(obj1);
 	Box* box2 = dynamic_cast<Box*>(obj2);
 	float dist = glm::distance(box1->m_position, box2->m_position);
@@ -358,4 +360,17 @@ void DIYPhysicsScene::OnUpdate(float deltaTime)
 	updateGizmos();
 	update(deltaTime);
 	
+}
+
+void DIYPhysicsScene::shutDown()
+{
+	delete newBall;
+	delete m_pObj;
+	delete boxOne;
+	delete boxTwo;
+	delete newPlane;
+	delete spring;
+	delete springBall1;
+	delete springBall;
+	//EYY ALL DONE
 }

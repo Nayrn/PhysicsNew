@@ -7,14 +7,17 @@ Box::Box(glm::vec3 a_centre, glm::vec3 a_extents, glm::vec4 colour, float a_mass
 	:RigidBody()
 {
 	centre = a_centre;
+	m_position = a_centre;
 	extents = a_extents;
 	m_colourBox = colour;
 	m_shapeID = BOX;
-	a_mass = m_massPO;
+	m_massPO = a_mass;
 	makeGizmo();
 	hasRB = true;
 	dynamicObj = true;
-	isKinematic = false;
+	//isKinematic = false; <- does nothing
+	// now only deltaTime is fucked for box, but mass is now being set correctly
+
 }
 
 

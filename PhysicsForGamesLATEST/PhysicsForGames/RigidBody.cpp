@@ -21,13 +21,13 @@ RigidBody::~RigidBody()
 
 void RigidBody::update(glm::vec3 gravity, float timeStep)
 {
-	if (dynamicObj)
+	if (dynamicObj == true)
 	{
 		velocity += acceleration * timeStep;
 		m_position += velocity * timeStep;
 	}
 	
-	//acceleration = glm::vec3(0.0f);
+	acceleration = glm::vec3(0.0f);
 }
 
 void RigidBody::debug()
