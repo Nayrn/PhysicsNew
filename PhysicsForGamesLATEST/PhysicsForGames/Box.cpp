@@ -1,9 +1,7 @@
 #include "Box.h"
 #include "Gizmos.h"
 
-//(glm::vec3 position, glm::vec3 velocity, glm::quat rotation, float mass);
-
-Box::Box(glm::vec3 a_centre, glm::vec3 a_extents, glm::vec4 colour, float a_mass)
+Box::Box(glm::vec3 a_centre, glm::vec3 a_velocity, glm::vec3 a_extents, glm::vec4 colour, float a_mass)
 	:RigidBody()
 {
 	centre = a_centre;
@@ -12,11 +10,10 @@ Box::Box(glm::vec3 a_centre, glm::vec3 a_extents, glm::vec4 colour, float a_mass
 	m_colourBox = colour;
 	m_shapeID = BOX;
 	m_massPO = a_mass;
-	makeGizmo();
 	hasRB = true;
-	dynamicObj = true;
-	//isKinematic = false; <- does nothing
-	// now only deltaTime is fucked for box, but mass is now being set correctly
+	dynamicObj = false;
+	acceleration = a_velocity / glfwGetTime();
+	isKinematic = false;
 
 }
 

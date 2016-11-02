@@ -1,6 +1,6 @@
 #include "DIYPhysicsScene.h"
 #include <algorithm>
-//RIGIDBODYS UPDATE NOT BEING CALLED
+// issue with deltaTime
 DIYPhysicsScene::DIYPhysicsScene()
 {
 	m_width = 1280;
@@ -11,9 +11,10 @@ DIYPhysicsScene::DIYPhysicsScene()
 	newBall = new Sphere(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
 
 	// -- box centre is position --
-	boxOne = new Box(glm::vec3(1, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
-	boxTwo = new Box(glm::vec3(0, 30, 1), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
-	
+	boxOne = new Box(glm::vec3(10, 5, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
+	boxTwo = new Box(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
+	boxOne->centre = boxOne->m_position;
+	boxTwo->centre = boxTwo->m_position;
 
 	springBall = new Sphere;
 	springBall1 = new Sphere;
@@ -46,25 +47,28 @@ void DIYPhysicsScene::AddActor(PhysicsObject * obj)
 
 void DIYPhysicsScene::removeActor(PhysicsObject * obj)
 {
-	actors.pop_back();
+	actors.pop_back();	
 }
 
 void DIYPhysicsScene::update(float deltaTime)
-{			
+{		
+	//definitely something wrong with deltaTime OVERALL
+		boxOne->centre = boxOne->m_position;
+		boxTwo->centre = boxTwo->m_position;	
 	//Iterate through each shape in the physics scene
 	// makeGizmo()
 	for (auto it = actors.begin(); it != actors.end(); it++)
 	{
 		(*it)->makeGizmo();
 		(*it)->update(gravity, deltaTime);
+		(*it)->m_deltaTime = deltaTime;
 	}
 	
 		checkForCol();
-		newBall->applyForce(gravity);
-		m_pObj->applyForce(gravity);
+		newBall->applyForce(gravity); // something really wrong with deltaTime, jumping around everywhere
+		m_pObj->applyForce(gravity);  // possibly getting set in multiple places
 		boxOne->applyForce(gravity);
-		boxTwo->applyForce(gravity);
-		
+		boxTwo->applyForce(gravity);		
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
@@ -333,8 +337,6 @@ void DIYPhysicsScene::addGizmos()
 void DIYPhysicsScene::setUp()
 {
 	Gizmos::create();
-
-	// do not create physics scene here, create in physics
 	// creating deltaTime
 	float currTime, prevTime, deltaTime;
 	currTime = glfwGetTime();
@@ -359,7 +361,6 @@ void DIYPhysicsScene::OnUpdate(float deltaTime)
 {
 	updateGizmos();
 	update(deltaTime);
-	
 }
 
 void DIYPhysicsScene::shutDown()

@@ -50,10 +50,9 @@ private:
 	int m_height;
 	int m_AR;
 	int m_numObjects;
-	float m_mass;
+	//float m_mass;
 	Sphere* m_pObj;
 	Sphere* newBall;
-	Sphere* magnet;
 	GLFWwindow * m_window;
 	glm::vec3 m_attractionForce;
 	Sphere* springBall;

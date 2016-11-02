@@ -5,6 +5,8 @@ RigidBody::RigidBody(glm::vec3 position, glm::vec3 velocity, glm::quat rotation,
 {
 	acceleration = velocity / glfwGetTime();
 	m_massPO = mass;
+	
+	
 }
 
 
@@ -21,6 +23,15 @@ RigidBody::~RigidBody()
 
 void RigidBody::update(glm::vec3 gravity, float timeStep)
 {
+
+	float currTime, prevTime, deltaTime;
+	currTime = glfwGetTime();
+	prevTime = currTime - glfwGetTime();
+	deltaTime = currTime;
+
+	m_deltaTime = deltaTime;
+
+
 	if (dynamicObj == true)
 	{
 		velocity += acceleration * timeStep;

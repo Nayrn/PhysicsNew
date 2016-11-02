@@ -8,8 +8,7 @@ Sphere::Sphere(glm::vec3 position, glm::vec3 velocity, float a_mass, float radiu
 	_radius = radius;
 	m_position = position;
 	m_colour = colour;
-	acceleration = velocity / glfwGetTime();
-	makeGizmo();   		
+	acceleration = velocity / glfwGetTime();	
 	m_massPO = a_mass;
 	m_shapeID = SPHERE;
 	hasRB = true;
