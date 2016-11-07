@@ -61,12 +61,11 @@ void DIYPhysicsScene::update(float deltaTime)
 	{
 		(*it)->makeGizmo();
 		(*it)->update(gravity, deltaTime);
-		(*it)->m_deltaTime = deltaTime;
 	}
 	
 		checkForCol();
-		newBall->applyForce(gravity); // something really wrong with deltaTime, jumping around everywhere
-		m_pObj->applyForce(gravity);  // possibly getting set in multiple places
+		newBall->applyForce(gravity);
+		m_pObj->applyForce(gravity);  
 		boxOne->applyForce(gravity);
 		boxTwo->applyForce(gravity);		
 }
@@ -139,7 +138,7 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 	glm::vec3 relVel = glm::vec3(0);
 	
 	//--SEPARATE OBJECTS HERE--
-	// will return ratio from 0.0f to 1.0f, separate based on that
+	// will return ratio from 0.0f to 1.0f, separate based on thatk
 	
 }
 
@@ -284,7 +283,7 @@ bool DIYPhysicsScene::box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
-	// deltaTime and mass are negative for box1 & 2, returning NaN for pos
+	// returning NaN for pos after about 5 sec
 	Box* box1 = dynamic_cast<Box*>(obj1);
 	Box* box2 = dynamic_cast<Box*>(obj2);
 	float dist = glm::distance(box1->m_position, box2->m_position);
@@ -343,8 +342,10 @@ void DIYPhysicsScene::setUp()
 	prevTime = currTime - glfwGetTime();
 	deltaTime = currTime;
 
+
+
 	
-	gravity = glm::vec3(0, -10, 0);
+	gravity = glm::vec3(0, -40, 0);
 	timeStep = .001f;	
 	
 	AddActor(m_pObj);

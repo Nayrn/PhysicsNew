@@ -11,10 +11,10 @@ Box::Box(glm::vec3 a_centre, glm::vec3 a_velocity, glm::vec3 a_extents, glm::vec
 	m_shapeID = BOX;
 	m_massPO = a_mass;
 	hasRB = true;
-	dynamicObj = false;
+	dynamicObj = true;
 	acceleration = a_velocity / glfwGetTime();
 	isKinematic = false;
-
+	
 }
 
 
