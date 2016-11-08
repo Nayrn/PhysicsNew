@@ -23,8 +23,7 @@ void Sphere::makeGizmo()
 }
 
 Sphere::~Sphere()
-{
-	delete this;
+{	
 }
 
 Sphere::Sphere()

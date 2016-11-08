@@ -10,5 +10,4 @@ Shapes::Shapes()
 
 Shapes::~Shapes()
 {
-	delete this;
 }

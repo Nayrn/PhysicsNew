@@ -16,20 +16,11 @@ RigidBody::RigidBody() :
 
 RigidBody::~RigidBody()
 {
-	delete this;
+	
 }
 
 void RigidBody::update(glm::vec3 gravity, float timeStep)
 {
-
-	float currTime, prevTime, deltaTime;
-	currTime = glfwGetTime();
-	prevTime = currTime - glfwGetTime();
-	deltaTime = currTime;
-
-	timeStep = deltaTime;
-
-
 	if (dynamicObj == true)
 	{
 		velocity += acceleration * timeStep;

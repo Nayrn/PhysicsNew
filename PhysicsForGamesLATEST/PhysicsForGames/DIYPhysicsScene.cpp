@@ -10,6 +10,9 @@ DIYPhysicsScene::DIYPhysicsScene()
 	m_pObj = new Sphere(glm::vec3(0, 50, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 1, 0, 1));  
 	newBall = new Sphere(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
 
+	m_pObj->elasticity = 0.7f;
+	newBall->elasticity = 0.7f;
+
 	// -- box centre is position --
 	boxOne = new Box(glm::vec3(10, 5, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
 	boxTwo = new Box(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
@@ -67,7 +70,9 @@ void DIYPhysicsScene::update(float deltaTime)
 		newBall->applyForce(gravity);
 		m_pObj->applyForce(gravity);  
 		boxOne->applyForce(gravity);
-		boxTwo->applyForce(gravity);		
+		boxTwo->applyForce(gravity);	
+
+		// boxes fucking off somewhere
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
@@ -138,8 +143,16 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 	glm::vec3 relVel = glm::vec3(0);
 	
 	//--SEPARATE OBJECTS HERE--
-	// will return ratio from 0.0f to 1.0f, separate based on thatk
+	// will return ratio from 0.0f to 1.0f, separate based on that
+	// j = (1 + elasticity) vel^A-B . n      j is impulse, literally the reaction
+	//		----------------------------
+	//		1 / MassA + 1 / MassB
+	glm::vec3 impulse;
+	impulse = -(1 + rb1->elasticity) * rb1->velocity - rb2->velocity * normal / (1 / MassA + 1 / MassB);
+	// checking ratio, if other obj has higher ratio, give velocity
 	
+	rb2->velocity += impulse; // / MassB
+	rb1->velocity -= impulse; // / MassA
 }
 
 
@@ -283,11 +296,10 @@ bool DIYPhysicsScene::box2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
-	// returning NaN for pos after about 5 sec
 	Box* box1 = dynamic_cast<Box*>(obj1);
 	Box* box2 = dynamic_cast<Box*>(obj2);
 	float dist = glm::distance(box1->m_position, box2->m_position);
-	glm::vec3 norm = box1->m_position - box2->m_position;
+	glm::vec3 norm = box1->extents - box2->extents;
 	norm = glm::normalize(norm);
 	// extents is key to AABB max & min
 	// -- Box1 -- //
@@ -299,7 +311,8 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	glm::vec3 MinB2 = box2->centre - box2->extents;
 
 	bool isCol = false;
-
+	// https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
+	//-- This whole chunk is correct 
 	if (MinB1.x <= MaxB2.x && MaxB1.x >= MinB2.x)
 		isCol = true;
 	else if (MinB1.y <= MaxB2.y && MaxB1.y >= MinB2.y)
@@ -308,8 +321,10 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 		isCol = true;
 	else
 		isCol = false;
+	//--
 
 
+	// check which direction they're overlapping in and separate them from there
 	if (isCol)
 	{
 		calcRatioAndSeperate(box1, box2, norm, dist);
@@ -345,7 +360,7 @@ void DIYPhysicsScene::setUp()
 
 
 	
-	gravity = glm::vec3(0, -40, 0);
+	gravity = glm::vec3(0, -10, 0);
 	timeStep = .001f;	
 	
 	AddActor(m_pObj);
@@ -361,7 +376,7 @@ void DIYPhysicsScene::setUp()
 void DIYPhysicsScene::OnUpdate(float deltaTime)
 {
 	updateGizmos();
-	update(deltaTime);
+	update(deltaTime); // deltaTime still jumping around
 }
 
 void DIYPhysicsScene::shutDown()

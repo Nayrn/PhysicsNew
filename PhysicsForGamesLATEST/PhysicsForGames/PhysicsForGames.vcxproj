@@ -166,7 +166,6 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="RigidBody.h" />
-    <ClInclude Include="Shapes.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpringJoint.h" />
     <ClInclude Include="stb_image.h" />
@@ -188,7 +187,6 @@
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBody.cpp" />
-    <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SpringJoint.cpp" />
   </ItemGroup>

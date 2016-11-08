@@ -19,7 +19,6 @@ SpringJoint::SpringJoint()
 
 SpringJoint::~SpringJoint()
 {
-	delete this;
 }
 
 void SpringJoint::update(glm::vec3 a_gravity, float timeStep)

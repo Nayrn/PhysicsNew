@@ -27,7 +27,6 @@ void Box::makeGizmo()
 
 Box::~Box()
 {
-	delete this;
 }
 
 Box::Box()

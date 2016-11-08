@@ -10,7 +10,6 @@ public:
 	glm::vec3 velocity;
 	glm::vec4 colour;
 	glm::vec3 acceleration;
-	//float m_mass; // get rid of this and start structuring based on that
 	float elasticity;
 	float drag;
 	int userInt;

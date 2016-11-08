@@ -42,5 +42,4 @@ Plane::Plane()
 
 Plane::~Plane()
 {
-	delete this;
 }
