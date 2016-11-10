@@ -27,6 +27,12 @@ void RigidBody::update(glm::vec3 gravity, float timeStep)
 		m_position += velocity * timeStep;
 	}
 	
+	if (isKinematic)
+	{
+		velocity = glm::vec3(0, 0, 0);	
+		acceleration = glm::vec3(0, 0, 0);
+	}
+
 	acceleration = glm::vec3(0.0f);
 }
 
@@ -37,6 +43,7 @@ void RigidBody::debug()
 void RigidBody::applyForce(glm::vec3 force)
 {			
 	acceleration += force / m_massPO;
+
 }
 
 void RigidBody::applyForcetoActor(PhysicsObject * actor2, glm::vec3 force)
