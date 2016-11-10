@@ -1,6 +1,2 @@
-﻿  DIYPhysicsScene.cpp
-c:\users\emily.ryan\documents\physicsnew1\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(26): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\emily.ryan\documents\physicsnew1\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(34): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\emily.ryan\documents\physicsnew1\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(456): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\emily.ryan\documents\physicsnew1\physicsforgameslatest\physicsforgames\diyphysicsscene.cpp(457): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  PhysicsForGames.vcxproj -> C:\Users\emily.ryan\Documents\PhysicsNew1\PhysicsForGamesLATEST\Debug\PhysicsForGames.exe
+﻿LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  PhysicsForGames.vcxproj -> C:\Users\emily.ryan\Documents\PhysicsNew\PhysicsForGamesLATEST\Debug\PhysicsForGames.exe

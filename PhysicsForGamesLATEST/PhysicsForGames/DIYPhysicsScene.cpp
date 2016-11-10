@@ -9,14 +9,14 @@ DIYPhysicsScene::DIYPhysicsScene()
 	m_numObjects = actors.size();
 	//spheres
 	m_pObj = new Sphere(glm::vec3(0, 50, 0), glm::vec3(0, 0, 0), 0.1f, 0.5f, glm::vec4(0, 1, 0, 1));  
-	newBall = new Sphere(glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
+	newBall = new Sphere(glm::vec3(15, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
 
 	m_pObj->elasticity = 0.7f;
 	newBall->elasticity = 0.7f;
 
 	//boxes
-	boxOne = new Box(glm::vec3(0, 30, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
-	boxTwo = new Box(glm::vec3(0, 20, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
+	boxOne = new Box(glm::vec3(10, 30, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
+	boxTwo = new Box(glm::vec3(10, 20, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
 	//springs
 	springBall = new Sphere;
 	springBall1 = new Sphere;
@@ -72,9 +72,6 @@ void DIYPhysicsScene::update(float deltaTime)
 		boxOne->applyForce(newForce);
 		boxTwo->applyForce(gravity);	
 
-
-		// boxes fucking off somewhere and returning -nan
-		// find out if accidental deletion is happening
 }
 
 typedef bool(*fn)(PhysicsObject*, PhysicsObject*);
@@ -153,9 +150,7 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 	impulse = -(1 + rb1->elasticity) * (rb1->velocity - rb2->velocity) * normal / 
 		(1 / MassA + 1 / MassB);
 	// checking ratio, if other obj has higher ratio, give velocity
-	// go to google drive photos, you need the top left  of the photo
 
-	// starting
 	rb1->velocity = rb1->velocity + (impulse / rb1->m_massPO * (normal));
 	rb2->velocity = rb2->velocity - (impulse / rb2->m_massPO *(normal));
 
@@ -166,6 +161,7 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 
 bool DIYPhysicsScene::plane2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 {
+	// not needed
 	return false;
 }
 
@@ -218,54 +214,7 @@ bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 }
 
 
-bool DIYPhysicsScene::box2Plane(PhysicsObject * ob1, PhysicsObject * ob2)
-{
-	// never getting called
-	Box* box = dynamic_cast<Box*>(ob1);
-	Plane* plane = dynamic_cast<Plane*>(ob2);
 
-	glm::vec3 colNormal = plane->m_vNormal;
-	float box2PlaneCol = glm::dot(box->centre, plane->m_vNormal) - plane->m_fDistance;
-
-	if (box2PlaneCol <= 0)
-	{
-		colNormal *= -1;
-		box2PlaneCol *= -1;
-	}
-
-	float intersectColX = box->extents.x - box2PlaneCol;
-	float intersectColY = box->extents.y - box2PlaneCol;
-	float intersectColZ = box->extents.z - box2PlaneCol;
-	
-	
-
-	if (intersectColX > 0)
-	{
-		calcRatioAndSeperate(box, plane, colNormal, intersectColX);
-		std::cout << "collided on X" << std::endl;
-		return true;
-	}
-
-	if (intersectColY > 0)
-	{
-		calcRatioAndSeperate(box, plane, colNormal, intersectColY);
-		std::cout << "collided on Y" << std::endl;
-		return true;
-	}
-
-	if (intersectColZ > 0)
-	{
-		calcRatioAndSeperate(box, plane, colNormal, intersectColZ);
-		std::cout << "collided on Z" << std::endl;
-		return true;
-	}
-
-	else if (intersectColX < 0 && intersectColY < 0 && intersectColZ < 0)
-		return false;
-
-
-	return false;
-}
 
 
 bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
@@ -432,6 +381,25 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	}
 	else
 	return false;
+}
+
+
+bool DIYPhysicsScene::box2Plane(PhysicsObject * ob1, PhysicsObject * ob2)
+{
+	// never getting called
+	Box* box = dynamic_cast<Box*>(ob1);
+	Plane* plane = dynamic_cast<Plane*>(ob2);
+
+	glm::vec3 colNormal = plane->m_vNormal;
+
+	// will need planes normal , min and max of boxes and offset from plane
+
+	//-- boxes
+	glm::vec3 MaxB1 = box->centre + box->extents;
+	glm::vec3 MinB1 = box->centre - box->extents;
+
+	// 
+
 }
 
 void DIYPhysicsScene::updateGizmos()
