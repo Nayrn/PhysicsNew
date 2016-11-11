@@ -5,11 +5,11 @@ Projectile::Projectile(glm::vec3 a_position, float a_mass, float timeStep, glm::
 	m_position = a_position;
 	m_massPO = a_mass;
 	hasRB = true;
+	m_shapeID = SPHERE;
 }
 
 Projectile::~Projectile()
 {
-	delete this;
 }
 
 Projectile::Projectile()
@@ -18,4 +18,5 @@ Projectile::Projectile()
 
 void Projectile::create()
 {
+	makeGizmo();	
 }

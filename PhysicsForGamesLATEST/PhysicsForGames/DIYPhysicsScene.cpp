@@ -3,20 +3,24 @@
 // issue with deltaTime
 DIYPhysicsScene::DIYPhysicsScene()
 {
+	// may have to make an array of spheres and iterate through for projectiles
 	m_width = 1280;
 	m_height = 720;
 	m_AR = m_width / m_height;
 	m_numObjects = actors.size();
 	//spheres
 	m_pObj = new Sphere(glm::vec3(0, 50, 0), glm::vec3(0, 0, 0), 0.1f, 0.5f, glm::vec4(0, 1, 0, 1));  
-	newBall = new Sphere(glm::vec3(15, 10, 0), glm::vec3(0, 0, 0), 0.1f, 1.0f, glm::vec4(0, 0, 1, 1)); 
-
-	m_pObj->elasticity = 0.7f;
-	newBall->elasticity = 0.7f;
+	newBall = new Sphere(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 0.5f, 1.0f, glm::vec4(0, 0, 1, 1));
+	proj = new Sphere(glm::vec3(20, 50, 0), glm::vec3(0, 0, 0), 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
+	proj->elasticity = 0.1f;
+	m_pObj->elasticity = 0.5f;
+	newBall->elasticity = 0.5f;
 
 	//boxes
-	boxOne = new Box(glm::vec3(10, 30, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 1.0f);
-	boxTwo = new Box(glm::vec3(10, 20, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
+	boxOne = new Box(glm::vec3(10, 30, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 0.5f);
+	boxOne->elasticity = 0.5f;
+	boxTwo = new Box(glm::vec3(0, 20, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
+	boxTwo->elasticity = 0.5f;
 	//springs
 	springBall = new Sphere;
 	springBall1 = new Sphere;
@@ -55,22 +59,29 @@ void DIYPhysicsScene::removeActor(PhysicsObject * obj)
 
 void DIYPhysicsScene::update(float deltaTime)
 {		
-	glm::vec3 newForce = glm::vec3(0, -20, 0);  // for box2box testing
-		boxOne->centre = boxOne->m_position;
-		boxTwo->centre = boxTwo->m_position;	
-	//Iterate through each shape in the physics scene
+
+	////Iterate through each shape in the physics scene
 	// makeGizmo()
 	for (auto it = actors.begin(); it != actors.end(); it++)
 	{
-		(*it)->makeGizmo();
 		(*it)->update(gravity, deltaTime);
 	}
 	
 		checkForCol();
-		newBall->applyForce(gravity);
-		m_pObj->applyForce(gravity);  
-		boxOne->applyForce(newForce);
-		boxTwo->applyForce(gravity);	
+
+		for (auto it = actors.begin(); it != actors.end(); it++)
+		{
+			(*it)->makeGizmo();
+		}
+
+		// projectiles spawning in
+		if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS)
+		{			
+			proj = new Sphere(glm::vec3(20, 50, 0), glm::vec3(0, 0, 0), 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
+			proj->makeGizmo();
+			AddActor(proj);
+			glm::vec3 newPos = proj->m_position + (proj->velocity * timeStep);
+		}
 
 }
 
@@ -146,9 +157,12 @@ void DIYPhysicsScene::calcRatioAndSeperate(PhysicsObject* obj1, PhysicsObject* o
 	// j = (1 + elasticity) vel^A-B . n      j is impulse, literally the reaction
 	//		----------------------------
 	//		1 / MassA + 1 / MassB
-	glm::vec3 impulse;
-	impulse = -(1 + rb1->elasticity) * (rb1->velocity - rb2->velocity) * normal / 
-		(1 / MassA + 1 / MassB);
+
+	relVel = (rb1->velocity - rb2->velocity);
+	float impulse;
+	float jTop = glm::dot(-(1 + rb1->elasticity) * relVel, normal);
+	float jBottom = ((1 / MassA) + (1 / MassB));
+	impulse = jTop / jBottom;
 	// checking ratio, if other obj has higher ratio, give velocity
 
 	rb1->velocity = rb1->velocity + (impulse / rb1->m_massPO * (normal));
@@ -175,7 +189,10 @@ bool DIYPhysicsScene::plane2Sphere(PhysicsObject* ob1, PhysicsObject* ob2)
 
 bool DIYPhysicsScene::plane2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 {
-	return false;
+	if(box2Plane(obj2, obj1))
+		return true;
+	else
+		return false;
 }
 
 bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
@@ -188,12 +205,6 @@ bool DIYPhysicsScene::sphere2Plane(PhysicsObject* ob1, PhysicsObject* ob2)
 		glm::vec3 colNormal = plane->m_vNormal;
 		float sphere2planeCol = glm::dot(sp->m_position, plane->m_vNormal) - plane->m_fDistance;
 		
-		if (sphere2planeCol <= 0)
-		{
-			colNormal *= -1;
-			sphere2planeCol *= -1;
-		}
-	
 		
 		float intersectCol = sp->_radius - sphere2planeCol;
 		
@@ -240,15 +251,15 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 			// set colour to red if overlapping and set velocity to 0
 			sp1->m_colour = glm::vec4(1, 0, 0, 1);
-			sp2->m_colour = glm::vec4(1, 0, 0, 1);
-
-			//sp1->velocity = glm::vec3(0, 0, 0);
-			//sp2->velocity = glm::vec3(0, 0, 0);
-			if (sp1->isKinematic == false && sp2->isKinematic == false)
-			{
-				obj1->applyForcetoActor(obj2, gravity / obj1->m_massPO);
-				obj2->applyForcetoActor(obj1, gravity / obj2->m_massPO);
-			}
+			//sp2->m_colour = glm::vec4(1, 0, 0, 1);
+			//
+			////sp1->velocity = glm::vec3(0, 0, 0);
+			////sp2->velocity = glm::vec3(0, 0, 0);
+			//if (sp1->isKinematic == false && sp2->isKinematic == false)
+			//{
+			//	obj1->applyForcetoActor(obj2, gravity / obj1->m_massPO);
+			//	obj2->applyForcetoActor(obj1, gravity / obj2->m_massPO);
+			//}
 			return true;
 
 		}
@@ -289,7 +300,7 @@ bool DIYPhysicsScene::sphere2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 		}
 
 
-		calcRatioAndSeperate(sp, box, normal, dist);
+		calcRatioAndSeperate(box, sp, normal, dist);
 		return true;
 	}
 			
@@ -348,10 +359,10 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	}
 	else   // (condition) ? (if true) : (if false)
 	{
-		glm::vec3 newOff = glm::vec3(std::abs(minOffset.x) < std::abs(maxOffset.x) ? minOffset.x : maxOffset.x,  //x
-			std::abs(minOffset.y) < std::abs(maxOffset.y) ? minOffset.y : maxOffset.y,        //y
-			std::abs(minOffset.z) < std::abs(maxOffset.z) ? minOffset.z : maxOffset.z);	//z
-
+		glm::vec3 newOff = glm::vec3(std::abs(minOffset.x) < std::abs(maxOffset.x) ? minOffset.x : maxOffset.x, //x
+									 std::abs(minOffset.y) < std::abs(maxOffset.y) ? minOffset.y : maxOffset.y, //y
+									 std::abs(minOffset.z) < std::abs(maxOffset.z) ? minOffset.z : maxOffset.z);//z
+		// something wrong with position
 
 		glm::vec3 offSet2;
 		if (std::abs(newOff.x) < std::abs(newOff.y) && std::abs(newOff.x) < std::abs(newOff.z))
@@ -369,18 +380,8 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 		float colDist = glm::length(offSet2);
 		calcRatioAndSeperate(box1, box2, normal, colDist);
 		return true;
-
-		// wooo it works
 	}																											  
 
-
-	if (isCol)
-	{
-		calcRatioAndSeperate(box1, box2, norm, dist);
-		return true;
-	}
-	else
-	return false;
 }
 
 
@@ -391,14 +392,25 @@ bool DIYPhysicsScene::box2Plane(PhysicsObject * ob1, PhysicsObject * ob2)
 	Plane* plane = dynamic_cast<Plane*>(ob2);
 
 	glm::vec3 colNormal = plane->m_vNormal;
-
+	 
 	// will need planes normal , min and max of boxes and offset from plane
 
 	//-- boxes
-	glm::vec3 MaxB1 = box->centre + box->extents;
-	glm::vec3 MinB1 = box->centre - box->extents;
+	glm::vec3 MaxB1 = box->m_position + box->extents;
+	glm::vec3 MinB1 = box->m_position - box->extents;
 
-	// 
+	float distMin = glm::dot(MinB1, plane->m_vNormal) - plane->m_fDistance;
+	float distMax = glm::dot(MaxB1, plane->m_vNormal) - plane->m_fDistance;
+
+	float distNew = (distMin < distMax) ? distMin : distMax;
+	if (distNew < 0)
+	{
+		calcRatioAndSeperate(box, plane, colNormal, -distNew);
+		return true;
+	}
+
+
+	return false;
 
 }
 
@@ -436,16 +448,16 @@ void DIYPhysicsScene::setUp()
 	AddActor(springBall);
 	AddActor(springBall1);
 	AddActor(spring);
-	AddActor(newPlane);
 	AddActor(boxOne);
 	AddActor(boxTwo);	
+	AddActor(newPlane);
 }
 
 void DIYPhysicsScene::OnUpdate(float deltaTime)
 {
 	updateGizmos();
 	update(timeStep);
-} // box one and two's rigidbody are being deleted
+} 
 
 void DIYPhysicsScene::shutDown()
 {
@@ -457,5 +469,6 @@ void DIYPhysicsScene::shutDown()
 	delete spring;
 	delete springBall1;
 	delete springBall;
-	//EYY ALL DONE
+	delete proj;
+	//incase of leaks
 }

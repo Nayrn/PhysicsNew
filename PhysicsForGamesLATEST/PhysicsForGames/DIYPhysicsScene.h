@@ -11,6 +11,7 @@
 #include "SpringJoint.h"
 #include "Plane.h"
 #include "Box.h"
+#include "Projectile.h"
 
 class DIYPhysicsScene 
 {
@@ -50,7 +51,6 @@ private:
 	int m_height;
 	int m_AR;
 	int m_numObjects;
-	//float m_mass;
 	Sphere* m_pObj;
 	Sphere* newBall;
 	GLFWwindow * m_window;
@@ -62,6 +62,7 @@ private:
 	Plane* newPlane;
 	Box* boxOne;
 	Box* boxTwo;
+	Sphere* proj;
 };
 
 static glm::vec3 gravity;
