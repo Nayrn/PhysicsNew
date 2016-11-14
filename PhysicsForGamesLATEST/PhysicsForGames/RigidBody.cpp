@@ -27,14 +27,16 @@ void RigidBody::update(glm::vec3 gravity, float timeStep)
 	{
 		velocity += acceleration * timeStep;
 		m_position += velocity * timeStep;
+		velocity *= 0.99999f;
 	}
+
 	
 	if (isKinematic)
 	{
 		velocity = glm::vec3(0, 0, 0);	
 		acceleration = glm::vec3(0, 0, 0);
 	}
-
+	
 	acceleration = glm::vec3(0.0f);
 }
 

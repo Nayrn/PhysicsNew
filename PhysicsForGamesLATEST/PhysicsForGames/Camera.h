@@ -17,6 +17,8 @@ public:
 
 	void updateViewProj();
 	void setPosition(vec3 pos);
+	glm::vec3 getPos();
+	glm::vec3 getFWD();
 	void setPerspective(float fov, float aspect, float near, float far);
 	void setLookAt(vec3 pos, vec3 center, vec3 up);
 
@@ -28,6 +30,8 @@ public:
 	mat4 view;
 	mat4 proj;
 	mat4 view_proj;
+
+	
 };
 
 class FlyCamera : public Camera

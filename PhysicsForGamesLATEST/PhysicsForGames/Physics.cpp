@@ -67,6 +67,37 @@ bool Physics::update()
             i == 10 ? white : black);
     }
 
+	static bool isFKeyDown = false;
+	if (!isFKeyDown && glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		isFKeyDown = true;
+		
+		glm::mat4 cameraTransform = m_camera.world;
+		//position = cameraTransform[3]
+		//forwardDir = cameraTransform[2]
+
+		glm::vec4 position = glm::vec4(0, 0, 0, 0);
+		glm::vec4 moveDir = glm::vec4(0, 0, 10, 0);
+
+		glm::vec3 newPos(position);
+		newPos = m_camera.getPos();
+
+		glm::vec3 newMove(moveDir);
+		newMove = glm::vec3(0, 0, 0);
+
+		newMove = m_camera.getFWD();
+
+		Sphere* projectile = new Sphere(newPos, newMove * 50.0f, 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
+		projectile->elasticity = 0.2f;
+		projectile->applyForcetoActor(projectile, -newMove * 1000);
+		m_pScene->AddActor(projectile);
+	}
+
+	if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_RELEASE)
+	{
+		isFKeyDown = false;
+	}
+
     m_camera.update(1.0f / 60.0f);
 	m_pScene->OnUpdate(m_delta_time);
 		

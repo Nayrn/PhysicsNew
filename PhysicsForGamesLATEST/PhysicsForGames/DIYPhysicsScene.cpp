@@ -11,15 +11,13 @@ DIYPhysicsScene::DIYPhysicsScene()
 	//spheres
 	m_pObj = new Sphere(glm::vec3(0, 50, 0), glm::vec3(0, 0, 0), 0.1f, 0.5f, glm::vec4(0, 1, 0, 1));  
 	newBall = new Sphere(glm::vec3(10, 10, 0), glm::vec3(0, 0, 0), 0.5f, 1.0f, glm::vec4(0, 0, 1, 1));
-	proj = new Sphere(glm::vec3(20, 50, 0), glm::vec3(0, 0, 0), 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
-	proj->elasticity = 0.1f;
 	m_pObj->elasticity = 0.5f;
 	newBall->elasticity = 0.5f;
 
 	//boxes
-	boxOne = new Box(glm::vec3(10, 30, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 0.5f);
+	boxOne = new Box(glm::vec3(100, 0, 60), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1), 0.5f);
 	boxOne->elasticity = 0.5f;
-	boxTwo = new Box(glm::vec3(0, 20, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
+	boxTwo = new Box(glm::vec3(40, 0, 60), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
 	boxTwo->elasticity = 0.5f;
 	//springs
 	springBall = new Sphere;
@@ -34,13 +32,13 @@ DIYPhysicsScene::DIYPhysicsScene()
 	springBall->isKinematic = true;
 	int numberBalls = 5;
 	for (int i = 1; i < numberBalls; i++)
-	{  // first springBall is being eaten by other spheres
+	{  
 		springBall1 = new Sphere(glm::vec3(30 - (i * 3), 25 - (i * 3), 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
 		springBall1->drag = 0.0f;
-		springBall1->elasticity = 0.9f;
+		springBall1->elasticity = 0.1f;
 		springBall1->userInt = 3;
 		AddActor(springBall1);
-		spring = new SpringJoint(springBall, springBall1, 0.1f, .999f);
+		spring = new SpringJoint(springBall, springBall1, 0.05f, .999f);
 		AddActor(spring);
 		springBall1->dynamicObj = true;
 	}
@@ -74,14 +72,7 @@ void DIYPhysicsScene::update(float deltaTime)
 			(*it)->makeGizmo();
 		}
 
-		// projectiles spawning in
-		if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS)
-		{			
-			proj = new Sphere(glm::vec3(20, 50, 0), glm::vec3(0, 0, 0), 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
-			proj->makeGizmo();
-			AddActor(proj);
-			glm::vec3 newPos = proj->m_position + (proj->velocity * timeStep);
-		}
+		
 
 }
 
@@ -251,15 +242,6 @@ bool DIYPhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 			// set colour to red if overlapping and set velocity to 0
 			sp1->m_colour = glm::vec4(1, 0, 0, 1);
-			//sp2->m_colour = glm::vec4(1, 0, 0, 1);
-			//
-			////sp1->velocity = glm::vec3(0, 0, 0);
-			////sp2->velocity = glm::vec3(0, 0, 0);
-			//if (sp1->isKinematic == false && sp2->isKinematic == false)
-			//{
-			//	obj1->applyForcetoActor(obj2, gravity / obj1->m_massPO);
-			//	obj2->applyForcetoActor(obj1, gravity / obj2->m_massPO);
-			//}
 			return true;
 
 		}
@@ -326,12 +308,12 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 
 	// extents is key to AABB max & min
 	// -- Box1 -- //
-	glm::vec3 MaxB1 = box1->centre + box1->extents;
-	glm::vec3 MinB1 = box1->centre - box1->extents;
+	glm::vec3 MaxB1 = box1->m_position + box1->extents;
+	glm::vec3 MinB1 = box1->m_position - box1->extents;
 
 	// --Box 2 -- //
-	glm::vec3 MaxB2 = box2->centre + box2->extents;
-	glm::vec3 MinB2 = box2->centre - box2->extents;
+	glm::vec3 MaxB2 = box2->m_position + box2->extents;
+	glm::vec3 MinB2 = box2->m_position - box2->extents;
 
 	bool isCol = false;
 	// https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
@@ -469,6 +451,5 @@ void DIYPhysicsScene::shutDown()
 	delete spring;
 	delete springBall1;
 	delete springBall;
-	delete proj;
 	//incase of leaks
 }

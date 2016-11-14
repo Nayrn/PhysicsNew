@@ -62,7 +62,7 @@ private:
 	Plane* newPlane;
 	Box* boxOne;
 	Box* boxTwo;
-	Sphere* proj;
+	
 };
 
 static glm::vec3 gravity;

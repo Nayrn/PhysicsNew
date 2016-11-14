@@ -37,6 +37,18 @@ void Camera::setPosition(vec3 pos)
 	updateViewProj();
 }
 
+glm::vec3 Camera::getPos()
+{
+	glm::vec3 newWorld(world[3]);
+	return newWorld;
+}
+
+glm::vec3 Camera::getFWD()
+{
+	glm::vec3 nWorld(world[2]);
+	return nWorld;
+}
+
 vec3 Camera::pickAgainstPlane(float x, float y, vec4 plane)
 {
     float nxPos = x / 1280.0f; //replace these with your screen width and height
