@@ -12,6 +12,7 @@
 
 bool Physics::startup()
 {
+	
     if (Application::startup() == false)
     {
         return false;
@@ -27,6 +28,7 @@ bool Physics::startup()
 
 	m_renderer = new Renderer();
 	
+	//g_PhysXActors.push_back(dynamicActor); <-  do intro to physics first
     return true;
 }
 
@@ -63,6 +65,20 @@ bool Physics::update()
 
     m_camera.update(1.0f / 60.0f);
 
+	for (auto actor : g_PhysXActors)
+	{
+		{
+			PxU32 nShapes = actor->getNbShapes();
+			PxShape** shapes = new PxShape*[nShapes];
+			actor->getShapes(shapes, nShapes);
+			// Render all the shapes in the physx actor (for early tutorials there is just one)
+			while (nShapes--)
+			{
+				//addWidget(shapes[nShapes], actor);
+			}
+			delete[] shapes;
+		}
+	}
 
     return true;
 }
@@ -127,16 +143,16 @@ void Physics::renderGizmos(PxScene* physics_scene)
     PxU32 actor_count = physics_scene->getNbActors(desiredTypes);
     PxActor** actor_list = new PxActor*[actor_count];
 	physics_scene->getActors(desiredTypes, actor_list, actor_count);
-    
+    //-- START
 	PxTransform pose = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f)));
 	PxBoxGeometry side1(4.5, 1, .5);
 	PxBoxGeometry side2(.5, 1, 4.5);
 
 	pose = PxTransform(PxVec3(0.0f, 0.5, 4.0f));
-//	PxRigidStatic* box = PxCreateStatic(*g_Physics, pose, side1, *g_PhysicsMaterial);
+	//PxRigidStatic* box = PxCreateStatic(*g_Physics, pose, side1, *g_PhysicsMaterial);
 //
-//	g_PhysicsScene->addActor(*box);
-//	g_PhysXActors.push_back(box);
+	//g_PhysicsScene->addActor(*box);
+	//g_PhysXActors.push_back(box);
 
     vec4 geo_color(1, 0, 0, 1);
     for (int actor_index = 0;

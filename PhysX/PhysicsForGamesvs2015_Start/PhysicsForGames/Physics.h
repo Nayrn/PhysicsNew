@@ -11,6 +11,7 @@
 using namespace physx;
 class Physics : public Application
 {
+	// go to Introduction to Physics first, then to collision thingies
 public:
 	virtual bool startup();
 	virtual void shutdown();
@@ -22,6 +23,7 @@ public:
     Renderer* m_renderer;
     FlyCamera m_camera;
     float m_delta_time;
+	std::vector<PxRigidActor*> g_PhysXActors;
 };
 
 
