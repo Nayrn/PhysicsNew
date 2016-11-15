@@ -7,6 +7,7 @@
 
 #include <PxPhysicsAPI.h>
 #include <PxScene.h>
+#include <pvd/PxVisualDebugger.h>
 
 using namespace physx;
 class Physics : public Application
@@ -19,11 +20,29 @@ public:
     virtual void draw();
 
 	void renderGizmos(PxScene* physics_scene);
+	void setUpPhysX();
+	void updatePhysX(float _deltaTime);
+	void setUpVisDebugger();
+	void setUpTutorial();
+
+
 
     Renderer* m_renderer;
     FlyCamera m_camera;
     float m_delta_time;
 	std::vector<PxRigidActor*> g_PhysXActors;
+
+	PxFoundation* g_PhysicsFoundation;
+	PxPhysics* g_Physics;
+	PxScene* g_PhysicsScene;
+	PxDefaultErrorCallback gDefaultErrorCallback;
+	PxDefaultAllocator gDefaultAllocatorCallback;
+	PxSimulationFilterShader gDefaultFilterShader = PxDefaultSimulationFilterShader;
+	PxMaterial* g_PhysicsMaterial;
+	PxMaterial* g_boxMaterial;
+	PxCooking* g_PhysicsCooker;
+	
+
 };
 
 

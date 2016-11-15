@@ -6,6 +6,7 @@
 
 #include "glm/ext.hpp"
 #include "glm/gtc/quaternion.hpp"
+#include "myAllocator.h"
 
 #define Assert(val) if (val){}else{ *((char*)0) = 0;}
 #define ArrayCount(val) (sizeof(val)/sizeof(val[0]))
@@ -28,7 +29,7 @@ bool Physics::startup()
 
 	m_renderer = new Renderer();
 	
-	//g_PhysXActors.push_back(dynamicActor); <-  do intro to physics first
+	//g_PhysXActors.push_back(); 
     return true;
 }
 
@@ -207,5 +208,70 @@ void Physics::renderGizmos(PxScene* physics_scene)
         }
         delete[] links;
     }
+}
+
+void Physics::setUpPhysX()
+{
+	PxAllocatorCallback *myCallback = new myAllocator(); // create this class
+	g_PhysicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *myCallback, gDefaultErrorCallback);
+	g_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *g_PhysicsFoundation, PxTolerancesScale());
+	PxInitExtensions(*g_Physics);
+	//create physics material	g_PhysicsMaterial = g_Physics->createMaterial(0.5f, 0.5f, .5f);
+	PxSceneDesc sceneDesc(g_Physics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0, -10.0f, 0);
+	sceneDesc.filterShader = &physx::PxDefaultSimulationFilterShader;
+	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
+	g_PhysicsScene = g_Physics->createScene(sceneDesc);
+
+
+}
+
+void Physics::updatePhysX(float _deltaTime)
+{
+	if (_deltaTime <= 0)
+		return;
+
+	g_PhysicsScene->simulate(_deltaTime);
+
+	while (!g_PhysicsScene->fetchResults)
+	{
+		// do nothing just yet, need to fetch results tho
+	}
+
+	g_PhysicsScene->release();
+	g_Physics->release();
+	g_PhysicsFoundation->release();
+
+}
+
+void Physics::setUpVisDebugger()
+{
+	if (g_Physics->getPvdConnectionManager() == NULL)
+		return;
+
+	const char* pvd_host_ip = "127.0.0.1";
+	int port = 5425;
+	unsigned int timeOut = 100; // timeout in MS to wait for response
+
+	PxVisualDebuggerConnectionFlags connectionFlags = PxVisualDebuggerExt::getAllConnectionFlags();
+
+	auto theConnection = PxVisualDebuggerExt::createConnection(g_Physics->getPvdConnectionManager(), pvd_host_ip, port, timeOut, connectionFlags);
+}
+
+void Physics::setUpTutorial()
+{
+	// adding a plane
+	PxTransform pose = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi*1.0f, PxVec3(0.0f, 0.0f, 1.0f)));
+	PxRigidStatic* plane = PxCreateStatic(*g_Physics, pose, PxPlaneGeometry(), *g_PhysicsMaterial);
+
+	g_PhysicsScene->addActor(*plane);
+
+	float density = 10;
+	PxBoxGeometry box(2, 2, 2);
+	PxTransform transform(PxVec3(0, 5, 0));
+	PxRigidDynamic* dynamicActor = PxCreateDynamic(*g_Physics, transform, box, *g_PhysicsMaterial, density);
+	
+	g_PhysicsScene->addActor(*dynamicActor);
+
 }
 
