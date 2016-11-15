@@ -28,7 +28,9 @@ bool Physics::startup()
     m_camera.sensitivity = 3;
 
 	m_renderer = new Renderer();
-	
+	setUpPhysX();
+	setUpVisDebugger();
+	setUpTutorial();
 	//g_PhysXActors.push_back(); 
     return true;
 }
@@ -55,7 +57,7 @@ bool Physics::update()
 
     vec4 white(1);
     vec4 black(0, 0, 0, 1);
-
+	
     for (int i = 0; i <= 20; ++i)
     {
         Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10),
@@ -65,7 +67,7 @@ bool Physics::update()
     }
 
     m_camera.update(1.0f / 60.0f);
-
+	updatePhysX(m_delta_time);
 	for (auto actor : g_PhysXActors)
 	{
 		{
@@ -233,7 +235,7 @@ void Physics::updatePhysX(float _deltaTime)
 
 	g_PhysicsScene->simulate(_deltaTime);
 
-	while (!g_PhysicsScene->fetchResults)
+	while (!g_PhysicsScene->fetchResults())
 	{
 		// do nothing just yet, need to fetch results tho
 	}
