@@ -51,6 +51,9 @@
     <ClInclude Include="myAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RagDoll.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RagDoll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

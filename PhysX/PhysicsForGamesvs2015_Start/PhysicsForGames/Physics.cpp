@@ -30,13 +30,16 @@ bool Physics::startup()
 	m_renderer = new Renderer();
 	setUpPhysX();
 	setUpVisDebugger();
-	setUpTutorial();
+	
 	//g_PhysXActors.push_back(); 
     return true;
 }
 
 void Physics::shutdown()
 {
+	g_PhysicsScene->release();
+	g_Physics->release();
+	g_PhysicsFoundation->release();
 	delete m_renderer;
     Gizmos::destroy();
     Application::shutdown();
@@ -77,7 +80,7 @@ bool Physics::update()
 			// Render all the shapes in the physx actor (for early tutorials there is just one)
 			while (nShapes--)
 			{
-				//addWidget(shapes[nShapes], actor);
+				//AddWidget(shapes[nShapes], actor, glm::vec4(0, 1, 0, 1));
 			}
 			delete[] shapes;
 		}
@@ -90,6 +93,7 @@ void Physics::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
+	//Gizmos::clear();
     Gizmos::draw(m_camera.proj, m_camera.view);
 
     m_renderer->RenderAndClear(m_camera.view_proj);
@@ -152,10 +156,10 @@ void Physics::renderGizmos(PxScene* physics_scene)
 	PxBoxGeometry side2(.5, 1, 4.5);
 
 	pose = PxTransform(PxVec3(0.0f, 0.5, 4.0f));
-	//PxRigidStatic* box = PxCreateStatic(*g_Physics, pose, side1, *g_PhysicsMaterial);
+	PxRigidStatic* box = PxCreateStatic(*g_Physics, pose, side1, *g_PhysicsMaterial);
 //
-	//g_PhysicsScene->addActor(*box);
-	//g_PhysXActors.push_back(box);
+	g_PhysicsScene->addActor(*box);
+	g_PhysXActors.push_back(box);
 
     vec4 geo_color(1, 0, 0, 1);
     for (int actor_index = 0;
@@ -218,7 +222,7 @@ void Physics::setUpPhysX()
 	g_PhysicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *myCallback, gDefaultErrorCallback);
 	g_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *g_PhysicsFoundation, PxTolerancesScale());
 	PxInitExtensions(*g_Physics);
-	//create physics material	g_PhysicsMaterial = g_Physics->createMaterial(0.5f, 0.5f, .5f);
+	g_PhysicsMaterial = g_Physics->createMaterial(0.5f, 0.5f, .5f);
 	PxSceneDesc sceneDesc(g_Physics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0, -10.0f, 0);
 	sceneDesc.filterShader = &physx::PxDefaultSimulationFilterShader;
@@ -239,11 +243,7 @@ void Physics::updatePhysX(float _deltaTime)
 	{
 		// do nothing just yet, need to fetch results tho
 	}
-
-	g_PhysicsScene->release();
-	g_Physics->release();
-	g_PhysicsFoundation->release();
-
+	
 }
 
 void Physics::setUpVisDebugger()
@@ -258,6 +258,7 @@ void Physics::setUpVisDebugger()
 	PxVisualDebuggerConnectionFlags connectionFlags = PxVisualDebuggerExt::getAllConnectionFlags();
 
 	auto theConnection = PxVisualDebuggerExt::createConnection(g_Physics->getPvdConnectionManager(), pvd_host_ip, port, timeOut, connectionFlags);
+	setUpTutorial();
 }
 
 void Physics::setUpTutorial()
@@ -266,13 +267,15 @@ void Physics::setUpTutorial()
 	PxTransform pose = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi*1.0f, PxVec3(0.0f, 0.0f, 1.0f)));
 	PxRigidStatic* plane = PxCreateStatic(*g_Physics, pose, PxPlaneGeometry(), *g_PhysicsMaterial);
 
-	g_PhysicsScene->addActor(*plane);
+	g_PhysicsScene->addActor(*plane); // doesn't work for reasons
+	// is actually there, just v large
+
+	// box
 
 	float density = 10;
 	PxBoxGeometry box(2, 2, 2);
 	PxTransform transform(PxVec3(0, 5, 0));
 	PxRigidDynamic* dynamicActor = PxCreateDynamic(*g_Physics, transform, box, *g_PhysicsMaterial, density);
-	
 	g_PhysicsScene->addActor(*dynamicActor);
 
 }
