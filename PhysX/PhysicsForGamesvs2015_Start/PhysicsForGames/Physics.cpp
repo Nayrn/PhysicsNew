@@ -1,5 +1,5 @@
 #include "Physics.h"
-
+#include "RagDoll.h"
 #include "gl_core_4_4.h"
 #include "GLFW/glfw3.h"
 #include "Gizmos.h"
@@ -31,6 +31,8 @@ bool Physics::startup()
 	setUpPhysX();
 	setUpVisDebugger();
 	
+	PxArticulation* ragdollArticulation;
+	//ragdollArticulation = RagDoll::makeRagdoll() Can't do this yet
 	//g_PhysXActors.push_back(); 
     return true;
 }
