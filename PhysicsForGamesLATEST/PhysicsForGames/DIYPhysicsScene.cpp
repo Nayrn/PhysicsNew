@@ -316,7 +316,6 @@ bool DIYPhysicsScene::box2Box(PhysicsObject * obj1, PhysicsObject * obj2)
 	glm::vec3 MinB2 = box2->m_position - box2->extents;
 
 	bool isCol = false;
-	// https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
 	//------ This whole chunk is correct 
 	if (MinB1.x <= MaxB2.x && MaxB1.x >= MinB2.x)
 		isCol = true;

@@ -1,2 +1,11 @@
 ﻿  Physics.cpp
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(29): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(30): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(31): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(32): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(179): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(180): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(181): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(182): warning C4305: 'argument': truncation from 'double' to 'physx::PxReal'
+c:\users\emily.ryan\documents\physicsnew\physx\physicsforgamesvs2015_start\physicsforgames\physics.cpp(192): warning C4305: 'argument': truncation from 'double' to 'float'
   PhysicsForGames.vcxproj -> C:\Users\emily.ryan\Documents\PhysicsNew\PhysX\PhysicsForGamesvs2015_Start\Debug\PhysicsForGames.exe
