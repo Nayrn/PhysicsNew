@@ -29,6 +29,7 @@ bool Physics::startup()
 	m_pScene = new DIYPhysicsScene;
 	m_pScene->SetWindow(m_window);
 	m_pScene->setUp();
+	projAwake = false;
 	
     return true;
 }
@@ -58,7 +59,7 @@ bool Physics::update()
 
     vec4 white(1);
     vec4 black(0, 0, 0, 1);
-
+	
     for (int i = 0; i <= 20; ++i)
     {
         Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10),
@@ -67,14 +68,13 @@ bool Physics::update()
             i == 10 ? white : black);
     }
 
+
 	static bool isFKeyDown = false;
 	if (!isFKeyDown && glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS)
 	{
 		isFKeyDown = true;
 		
 		glm::mat4 cameraTransform = m_camera.world;
-		//position = cameraTransform[3]
-		//forwardDir = cameraTransform[2]
 
 		glm::vec4 position = glm::vec4(0, 0, 0, 0);
 		glm::vec4 moveDir = glm::vec4(0, 0, 10, 0);
@@ -87,16 +87,23 @@ bool Physics::update()
 
 		newMove = m_camera.getFWD();
 
-		Sphere* projectile = new Sphere(newPos, newMove * 50.0f, 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
+		projectile = new Sphere(newPos, newMove * 50.0f, 0.5f, 1.0f, glm::vec4(0, 0, 0, 1));
 		projectile->elasticity = 0.2f;
 		projectile->applyForcetoActor(projectile, -newMove * 1000);
 		m_pScene->AddActor(projectile);
+		projAwake = true;
+		projLifeTime = 5.0f;
 	}
+
+
+	if (projAwake)
+		DestroyProj();
 
 	if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_RELEASE)
 	{
 		isFKeyDown = false;
-	}
+	}	
+	
 
     m_camera.update(1.0f / 60.0f);
 	m_pScene->OnUpdate(m_delta_time);
@@ -218,5 +225,16 @@ void Physics::renderGizmos(PxScene* physics_scene)
         }
         delete[] links;
     }
+}
+
+void Physics::DestroyProj()
+{
+	projLifeTime -= m_delta_time;
+	if (projLifeTime <= 0.0f && projectile != NULL)
+	{
+		m_pScene->removeActor(projectile);
+		projectile = NULL;
+	}
+	
 }
 

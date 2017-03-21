@@ -11,5 +11,5 @@ public:
 	virtual void makeGizmo();
 	~Sphere();
 	Sphere();
-
+	bool isAlive = true;
 };

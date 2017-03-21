@@ -19,12 +19,16 @@ public:
     virtual void draw();
 
 	void renderGizmos(PxScene* physics_scene);
+	void DestroyProj();
+
 
     Renderer* m_renderer;
     FlyCamera m_camera;
     float m_delta_time;
 	DIYPhysicsScene* m_pScene;
-
+	Sphere* projectile;
+	bool projAwake;
+	float projLifeTime;
 };
 
 

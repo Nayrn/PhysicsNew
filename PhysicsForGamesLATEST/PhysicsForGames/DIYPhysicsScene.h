@@ -55,9 +55,9 @@ private:
 	Sphere* newBall;
 	GLFWwindow * m_window;
 	glm::vec3 m_attractionForce;
-	Sphere* springBall;
-	Sphere* springBall1;
-	SpringJoint * spring;
+	//Sphere* springBall;
+	//Sphere* springBall1;
+	//SpringJoint * spring;
 	std::vector<Sphere*> ballActor;
 	Plane* newPlane;
 	Box* boxOne;

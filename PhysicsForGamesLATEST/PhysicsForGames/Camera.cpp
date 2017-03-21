@@ -94,7 +94,7 @@ void FlyCamera::update(float dt)
 
 	if (glfwGetKey(curr_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		speed *= 3.0f;
+		speed *= 4.0f;
 	}
 
 	if (glfwGetKey(curr_window, GLFW_KEY_W) == GLFW_PRESS)

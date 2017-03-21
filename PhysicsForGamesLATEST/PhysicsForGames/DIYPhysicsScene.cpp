@@ -20,28 +20,28 @@ DIYPhysicsScene::DIYPhysicsScene()
 	boxTwo = new Box(glm::vec3(40, 0, 60), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec4(0, 0, 1, 1), 1.1f);
 	boxTwo->elasticity = 0.5f;
 	//springs
-	springBall = new Sphere;
-	springBall1 = new Sphere;
+	//springBall = new Sphere;
+	//springBall1 = new Sphere;
 	
 	newPlane = new Plane(glm::vec3(0, 1, 0.), 1.0f);
 	newPlane->m_massPO = 1000.0f;
-	springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
-	springBall->drag = 0;
-	springBall->elasticity = 0.9f;
-	springBall->dynamicObj = false;
-	springBall->isKinematic = true;
+	//springBall = new Sphere(glm::vec3(30, 30, 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
+	//springBall->drag = 0;
+	//springBall->elasticity = 0.9f;
+	//springBall->dynamicObj = false;
+	//springBall->isKinematic = true;
 	int numberBalls = 5;
-	for (int i = 1; i < numberBalls; i++)
-	{  
-		springBall1 = new Sphere(glm::vec3(30 - (i * 3), 25 - (i * 3), 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
-		springBall1->drag = 0.0f;
-		springBall1->elasticity = 0.1f;
-		springBall1->userInt = 3;
-		AddActor(springBall1);
-		spring = new SpringJoint(springBall, springBall1, 0.05f, .999f);
-		AddActor(spring);
-		springBall1->dynamicObj = true;
-	}
+	//for (int i = 1; i < numberBalls; i++)
+	//{  
+	//	springBall1 = new Sphere(glm::vec3(30 - (i * 3), 25 - (i * 3), 10), glm::vec3(0, 0, 0), 0.4, 1.0f, glm::vec4(0, 0, 0, 1));
+	//	springBall1->drag = 0.0f;
+	//	springBall1->elasticity = 0.1f;
+	//	springBall1->userInt = 3;
+	//	AddActor(springBall1);
+	//	spring = new SpringJoint(springBall, springBall1, 0.05f, .999f);
+	//	AddActor(spring);
+	//	springBall1->dynamicObj = true;
+	//}
 }
 
 void DIYPhysicsScene::AddActor(PhysicsObject * obj)
@@ -426,9 +426,9 @@ void DIYPhysicsScene::setUp()
 	
 	AddActor(m_pObj);
 	AddActor(newBall);
-	AddActor(springBall);
-	AddActor(springBall1);
-	AddActor(spring);
+	//AddActor(springBall);
+	//AddActor(springBall1);
+	//AddActor(spring);
 	AddActor(boxOne);
 	AddActor(boxTwo);	
 	AddActor(newPlane);
@@ -447,8 +447,8 @@ void DIYPhysicsScene::shutDown()
 	delete boxOne;
 	delete boxTwo;
 	delete newPlane;
-	delete spring;
-	delete springBall1;
-	delete springBall;
+	//delete spring;
+	//delete springBall1;
+	//delete springBall;
 	//incase of leaks
 }
